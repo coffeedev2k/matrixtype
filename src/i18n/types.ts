@@ -1,0 +1,32 @@
+export interface AppCopy {
+  welcomeTitle: string;
+  welcomeLead: string;
+  architectureNote: string;
+  interfaceLanguage: string;
+  keyboardLayout: string;
+  textMode: string;
+  customTextLabel: string;
+  defaultTextLabel: string;
+  start: string;
+  customTextAction: string;
+  settings: string;
+  sayCommand: string;
+  complete: string;
+  unsupportedChar: string;
+  currentChar: string;
+  errorCount: string;
+  restart: string;
+  back: string;
+  trainerHint: string;
+  unsupportedHint: string;
+  finishedTitle: string;
+  finishedText: string;
+  settingsEyebrow: string;
+  settingsTitle: string;
+  settingsLead: string;
+  useCustomText: string;
+  textLabel: string;
+  save: string;
+  reset: string;
+  space: string;
+}

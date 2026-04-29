@@ -1,0 +1,7 @@
+refs/
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Local references.
