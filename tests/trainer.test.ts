@@ -23,6 +23,14 @@ const commandMap: KeyCommandMap = {
       fingerNumber: 1,
       position: 'на месте'
     },
+    А: {
+      spokenCommand: 'левая рука, с Shift',
+      hand: 'left',
+      fingerNumber: 1,
+      position: 'на месте',
+      baseChar: 'а',
+      requiresShift: true
+    },
     ' ': {
       spokenCommand: 'пробел'
     },
@@ -70,6 +78,42 @@ describe('trainer core', () => {
 
     expect(result.outcome).toBe('complete');
     expect(result.state.typedText).toBe('.');
+  });
+
+  it('advances uppercase only on exact uppercase input', () => {
+    const state = createTrainerState('А');
+    const result = applyInput(state, commandMap, 'А');
+
+    expect(result.outcome).toBe('complete');
+    expect(result.state.cursor).toBe(1);
+    expect(result.state.typedText).toBe('А');
+  });
+
+  it('does not advance uppercase target on lowercase input', () => {
+    const state = createTrainerState('А');
+    const result = applyInput(state, commandMap, 'а');
+
+    expect(result.outcome).toBe('incorrect');
+    expect(result.state.cursor).toBe(0);
+    expect(result.state.errorCount).toBe(1);
+  });
+
+  it('does not advance lowercase target on uppercase input', () => {
+    const state = createTrainerState('а');
+    const result = applyInput(state, commandMap, 'А');
+
+    expect(result.outcome).toBe('incorrect');
+    expect(result.state.cursor).toBe(0);
+    expect(result.state.errorCount).toBe(1);
+  });
+
+  it('ignores standalone Shift without counting an error', () => {
+    const state = createTrainerState('А');
+    const result = applyInput(state, commandMap, 'Shift');
+
+    expect(result.outcome).toBe('ignored');
+    expect(result.state.cursor).toBe(0);
+    expect(result.state.errorCount).toBe(0);
   });
 
   it('reports unsupported characters without crashing', () => {
@@ -139,6 +183,34 @@ describe('trainer core', () => {
       hand: 'left',
       fingerNumber: 4,
       position: 'in place'
+    });
+  });
+
+  it('derives English uppercase commands from lowercase base commands', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'en-us-qwerty');
+    const command = layout?.commandsByLocale.ru.commands.S;
+
+    expect(command).toMatchObject({
+      spokenCommand: 'левой, 3-м, на месте, с Shift',
+      hand: 'left',
+      fingerNumber: 3,
+      position: 'на месте',
+      baseChar: 's',
+      requiresShift: true
+    });
+  });
+
+  it('derives Russian uppercase commands from lowercase base commands', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'ru-qwerty');
+    const command = layout?.commandsByLocale.ru.commands['А'];
+
+    expect(command).toMatchObject({
+      spokenCommand: 'левой, 1-м, на месте, с Shift',
+      hand: 'left',
+      fingerNumber: 1,
+      position: 'на месте',
+      baseChar: 'а',
+      requiresShift: true
     });
   });
 

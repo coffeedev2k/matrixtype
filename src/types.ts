@@ -11,6 +11,8 @@ export interface KeyCommand {
   hand?: Hand;
   fingerNumber?: FingerNumber;
   position?: string;
+  baseChar?: string;
+  requiresShift?: true;
 }
 
 export interface KeyCommandMap {

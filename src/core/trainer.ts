@@ -81,9 +81,7 @@ export function applyInput(
     };
   }
 
-  const input = rawInput.toLocaleLowerCase(commandMap.inputLocale);
-
-  if (input !== cue.char) {
+  if (rawInput !== cue.char) {
     return {
       state: {
         ...state,

@@ -3,6 +3,9 @@ import type { AppLocale, KeyCommand, KeyCommandMap, KeyboardLayout } from '../..
 type CommandTuple = [ru: string, en: string, hand?: 'left' | 'right', fingerNumber?: 1 | 2 | 3 | 4, ruPosition?: string, enPosition?: string];
 
 const inputLocale = 'ru-RU';
+const shiftedChars: Record<string, string> = Object.fromEntries(
+  'ёйцукенгшщзхъфывапролджэячсмитьбю'.split('').map((char) => [char.toLocaleUpperCase(inputLocale), char])
+);
 
 const commandRows: Record<string, CommandTuple> = {
   ё: ['левой, 4-м, высоко вверх влево', 'left, 4th, high up left', 'left', 4, 'высоко вверх влево', 'high up left'],
@@ -96,6 +99,8 @@ function createCommandMap(appLocale: AppLocale): KeyCommandMap {
     commands[char] = command;
   }
 
+  addShiftCommands(commands, appLocale);
+
   return {
     id: `ru-qwerty-${appLocale}`,
     keyboardLayout: 'ru-qwerty',
@@ -103,4 +108,23 @@ function createCommandMap(appLocale: AppLocale): KeyCommandMap {
     inputLocale,
     commands
   };
+}
+
+function addShiftCommands(commands: Record<string, KeyCommand>, appLocale: AppLocale): void {
+  const shiftSuffix = appLocale === 'ru' ? 'с Shift' : 'with Shift';
+
+  for (const [shiftedChar, baseChar] of Object.entries(shiftedChars)) {
+    const baseCommand = commands[baseChar];
+
+    if (!baseCommand) {
+      continue;
+    }
+
+    commands[shiftedChar] = {
+      ...baseCommand,
+      spokenCommand: `${baseCommand.spokenCommand}, ${shiftSuffix}`,
+      baseChar,
+      requiresShift: true
+    };
+  }
 }

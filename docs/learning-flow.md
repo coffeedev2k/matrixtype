@@ -9,6 +9,8 @@
 
 Wrong input flashes the screen and keeps the cursor in place.
 
+Uppercase letters are trained as the same base key plus Shift. For example, `S` uses the command for `s` with an added Shift phrase. The active hand and finger still show the base key; Shift is not shown as a separate hand action in V1.
+
 Finger numbering:
 
 - Thumb is not counted.

@@ -69,6 +69,25 @@ describe('app UI', () => {
     expect(document.body.textContent).toContain('Слепая печать через телесные команды');
     expect(document.body.textContent).not.toContain('Blind typing through body commands');
   });
+
+  it('supports uppercase custom text through Shift-derived commands', async () => {
+    await bootApp('en-US');
+
+    clickButton('Custom text');
+
+    const textarea = document.querySelector<HTMLTextAreaElement>('.text-editor');
+    const checkbox = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    expect(textarea).toBeTruthy();
+    expect(checkbox).toBeTruthy();
+
+    textarea!.value = 'S';
+    checkbox!.checked = true;
+    clickButton('Save');
+
+    expect(document.querySelector('.command-banner')?.textContent).toContain('with Shift');
+    expect(document.querySelector('.command-banner')?.textContent).toContain('S');
+    expect(document.body.textContent).not.toContain('unsupported character');
+  });
 });
 
 async function bootApp(language = 'ru-RU'): Promise<void> {
