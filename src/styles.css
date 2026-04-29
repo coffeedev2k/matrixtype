@@ -322,65 +322,53 @@ h2 {
 
 .hands-guide {
   display: block;
-  width: min(760px, 100%);
+  width: min(587px, 100%);
   height: auto;
   margin: 20px auto 0;
 }
 
+.hands-guide__image {
+  filter: grayscale(1) saturate(0) contrast(1.08);
+  opacity: 0.68;
+  pointer-events: none;
+}
+
 .hand__palm,
 .hand__finger {
-  stroke: #7a7d80;
-  stroke-width: 7;
-  stroke-linejoin: round;
-  stroke-linecap: round;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .hand__palm {
-  fill: #fff;
+  fill: #ff1f1f;
 }
 
 .hand__palm--active {
-  fill: #d9f0e3;
-}
-
-.hand__finger--white {
-  fill: #fff;
-}
-
-.hand__finger--orange {
-  fill: #f0bd76;
-}
-
-.hand__finger--blue {
-  fill: #a9cbea;
-}
-
-.hand__finger--pink {
-  fill: #e99ec7;
-}
-
-.hand__finger--yellow {
-  fill: #efd787;
-}
-
-.hand__finger--green {
-  fill: #6fca93;
+  opacity: 0.5;
 }
 
 .hand__finger--active {
-  filter: drop-shadow(0 0 0.35rem rgba(38, 141, 97, 0.65));
-  stroke: #268d61;
+  fill: #ff1f1f;
+  opacity: 0.88;
+  filter: drop-shadow(0 0 0.3rem rgba(255, 31, 31, 0.35));
 }
 
 .hand__number {
   fill: #202124;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 800;
+  opacity: 0;
   pointer-events: none;
+  paint-order: stroke;
+  stroke: #f8fafc;
+  stroke-linejoin: round;
+  stroke-width: 4;
 }
 
 .hand__number--active {
   fill: #fff;
+  stroke: #202124;
+  opacity: 1;
 }
 
 .cue-char {

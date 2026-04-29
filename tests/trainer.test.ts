@@ -5,6 +5,7 @@ import {
   applyInput,
   createTrainerState,
   getCurrentCue,
+  normalizeCustomTrainingText,
   normalizeTrainingText
 } from '../src/core/trainer';
 import { trainerConfig } from '../src/data/config';
@@ -85,8 +86,12 @@ describe('trainer core', () => {
     expect(result.state.cursor).toBe(0);
   });
 
-  it('normalizes custom text before training', () => {
+  it('normalizes default text to lower case before training', () => {
     expect(normalizeTrainingText('  РУКА   ПОМНИТ  КЛАВИШУ. ')).toBe('рука помнит клавишу.');
+  });
+
+  it('keeps custom text case while normalizing spacing', () => {
+    expect(normalizeCustomTrainingText('  Hotel   California  TEST. ')).toBe('Hotel California TEST.');
   });
 
   it('keeps Russian commands tied to Russian interface over Russian keyboard', () => {

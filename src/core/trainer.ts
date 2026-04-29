@@ -24,6 +24,10 @@ export function normalizeTrainingText(text: string, locale = 'ru-RU'): string {
   return text.replace(/\s+/g, ' ').trim().toLocaleLowerCase(locale);
 }
 
+export function normalizeCustomTrainingText(text: string): string {
+  return text.replace(/\s+/g, ' ').trim();
+}
+
 export function createTrainerState(targetText: string): TrainerState {
   return {
     targetText,

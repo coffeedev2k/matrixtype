@@ -1,11 +1,22 @@
 import './styles.css';
-import { applyInput, createTrainerState, getCurrentCue, isComplete, normalizeTrainingText } from './core/trainer';
+import {
+  applyInput,
+  createTrainerState,
+  getCurrentCue,
+  isComplete,
+  normalizeCustomTrainingText,
+  normalizeTrainingText
+} from './core/trainer';
 import { clearPreferences, loadPreferences, savePreferences } from './core/storage';
 import { trainerConfig } from './data/config';
+import { handGuideAreas } from './data/handGuideAreas';
+import type { FingerHandGuideArea } from './data/handGuideAreas';
 import { appCopy } from './i18n';
 import type { AppCopy } from './i18n/types';
 import type {
   AppLocale,
+  FingerNumber,
+  Hand,
   KeyCommand,
   KeyboardLayout,
   KeyboardLayoutId,
@@ -15,6 +26,22 @@ import type {
 } from './types';
 
 type Screen = 'welcome' | 'trainer' | 'settings';
+
+const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands-from-refs-numbered-v3.svg`;
+const handGuideFingerLabels: Record<Hand, Record<FingerNumber, { x: number; y: number }>> = {
+  left: {
+    1: { x: 207, y: 57 },
+    2: { x: 151, y: 35 },
+    3: { x: 94, y: 54 },
+    4: { x: 52, y: 94 }
+  },
+  right: {
+    1: { x: 369, y: 57 },
+    2: { x: 426, y: 36 },
+    3: { x: 483, y: 51 },
+    4: { x: 524, y: 95 }
+  }
+};
 
 interface AppState {
   screen: Screen;
@@ -381,109 +408,84 @@ function renderHands(command: KeyCommand | null): SVGSVGElement {
     'svg',
     {
       class: 'hands-guide',
-      viewBox: '0 0 760 250',
+      viewBox: '0 0 587 245',
       role: 'img',
       'aria-label': 'hand guide'
     },
-    renderHand('left', 42, activeHand, activeFinger),
-    renderHand('right', 424, activeHand, activeFinger)
+    svgEl('image', {
+      class: 'hands-guide__image',
+      href: handsGuideAsset,
+      x: '0',
+      y: '0',
+      width: '587',
+      height: '245'
+    }),
+    renderHandOverlay('left', activeHand, activeFinger),
+    renderHandOverlay('right', activeHand, activeFinger)
   );
 }
 
-function renderHand(
-  hand: 'left' | 'right',
-  x: number,
-  activeHand: 'left' | 'right' | undefined,
-  activeFinger: 1 | 2 | 3 | 4 | undefined
+function renderHandOverlay(
+  hand: Hand,
+  activeHand: Hand | undefined,
+  activeFinger: FingerNumber | undefined
 ): SVGGElement {
   const activePalm = activeHand === hand;
-  const fingers =
-    hand === 'left'
-      ? [
-          { number: 4, points: fingerPoints(22, 118, 60, 34, 92, 127), color: 'orange' },
-          { number: 3, points: fingerPoints(80, 120, 94, 8, 118, 120), color: 'blue' },
-          { number: 2, points: fingerPoints(134, 122, 180, 22, 194, 132), color: 'pink' },
-          { number: 1, points: thumbPoints('left'), color: 'white' }
-        ]
-      : [
-          { number: 1, points: thumbPoints('right'), color: 'white' },
-          { number: 2, points: fingerPoints(36, 132, 50, 22, 94, 122), color: 'yellow' },
-          { number: 3, points: fingerPoints(112, 120, 126, 8, 150, 120), color: 'green' },
-          { number: 4, points: fingerPoints(176, 127, 208, 34, 246, 118), color: 'orange' }
-        ];
-  const palmPath =
-    hand === 'left'
-      ? 'M42 124 C58 111 83 106 111 108 C134 110 153 117 168 130 L167 151 C180 150 191 140 204 129 L226 151 C203 174 186 205 190 232 L46 232 C35 204 29 174 33 145 C35 136 38 129 42 124 Z'
-      : 'M206 124 C190 111 165 106 137 108 C114 110 95 117 80 130 L81 151 C68 150 57 140 44 129 L22 151 C45 174 62 205 58 232 L202 232 C213 204 219 174 215 145 C213 136 210 129 206 124 Z';
+  const palm = handGuideAreas.find((area) => area.hand === hand && area.kind === 'palm');
+  const fingerOrder: FingerNumber[] = hand === 'left' ? [4, 3, 2, 1] : [1, 2, 3, 4];
+  const fingers = fingerOrder.map((fingerNumber): FingerHandGuideArea => {
+    const area = handGuideAreas.find(
+      (candidate) => candidate.hand === hand && candidate.kind === 'finger' && candidate.fingerNumber === fingerNumber
+    );
+
+    if (!area || area.kind !== 'finger') {
+      throw new Error(`Missing ${hand} hand finger ${fingerNumber} guide area`);
+    }
+
+    return area;
+  });
+
+  if (!palm) {
+    throw new Error(`Missing ${hand} hand palm guide area`);
+  }
 
   return svgEl(
     'g',
-    { class: 'hand', 'data-hand': hand, transform: `translate(${x}, 10)` },
-    ...fingers.map((finger) => {
-      const active = activeHand === hand && activeFinger === finger.number;
+    { class: 'hand', 'data-hand': hand },
+    svgEl('path', {
+      class: activePalm ? 'hand__palm hand__palm--active' : 'hand__palm',
+      d: palm.d,
+      transform: palm.transform
+    }),
+    ...fingers.map((area) => {
+      const fingerNumber = area.fingerNumber;
+      const label = handGuideFingerLabels[hand][fingerNumber];
+      const active = activeHand === hand && activeFinger === fingerNumber;
+
       return svgEl(
         'g',
         {
           class: active ? 'hand__digit hand__digit--active' : 'hand__digit',
-          'data-finger-number': String(finger.number)
+          'data-finger-number': String(fingerNumber)
         },
         svgEl('path', {
-          class: `hand__finger hand__finger--${finger.color}${active ? ' hand__finger--active' : ''}`,
-          d: finger.points.path
+          class: active ? 'hand__finger hand__finger--active' : 'hand__finger',
+          d: area.d,
+          transform: area.transform
         }),
         svgEl(
           'text',
           {
             class: active ? 'hand__number hand__number--active' : 'hand__number',
-            x: finger.points.labelX,
-            y: finger.points.labelY,
+            x: label.x,
+            y: label.y,
             'text-anchor': 'middle'
           },
-          String(finger.number)
+          String(fingerNumber)
         )
       );
-    }),
-    svgEl('path', {
-      class: activePalm ? 'hand__palm hand__palm--active' : 'hand__palm',
-      d: palmPath
     })
   );
-}
-
-interface FingerShape {
-  path: string;
-  labelX: number;
-  labelY: number;
-}
-
-function fingerPoints(baseLeftX: number, baseLeftY: number, tipX: number, tipY: number, baseRightX: number, baseRightY: number): FingerShape {
-  return {
-    path: [
-      `M${baseLeftX} ${baseLeftY}`,
-      `L${tipX - 15} ${tipY + 7}`,
-      `Q${tipX} ${tipY - 10} ${tipX + 15} ${tipY + 7}`,
-      `L${baseRightX} ${baseRightY}`,
-      'Z'
-    ].join(' '),
-    labelX: tipX,
-    labelY: tipY + 16
-  };
-}
-
-function thumbPoints(hand: 'left' | 'right'): FingerShape {
-  if (hand === 'left') {
-    return {
-      path: 'M154 137 C180 129 203 116 225 101 L247 124 C219 143 201 162 181 179 C166 169 157 155 154 137 Z',
-      labelX: 220,
-      labelY: 132
-    };
-  }
-
-  return {
-    path: 'M94 137 C68 129 45 116 23 101 L1 124 C29 143 47 162 67 179 C82 169 91 155 94 137 Z',
-    labelX: 28,
-    labelY: 132
-  };
 }
 
 function renderNotice(message: string, tone: 'info' | 'warning' = 'info'): HTMLElement {
@@ -516,10 +518,11 @@ function updatePreferences(preferences: StoredPreferences): void {
 
 function getActiveTrainingText(appState: AppState): string {
   const layout = getActiveLayout(appState);
-  const rawText = isUsingCustomText(appState)
-    ? appState.preferences.customTexts[layout.id] ?? ''
-    : layout.defaultText;
-  const normalized = normalizeTrainingText(rawText, layout.inputLocale);
+  const customTextEnabled = isUsingCustomText(appState);
+  const rawText = customTextEnabled ? appState.preferences.customTexts[layout.id] ?? '' : layout.defaultText;
+  const normalized = customTextEnabled
+    ? normalizeCustomTrainingText(rawText)
+    : normalizeTrainingText(rawText, layout.inputLocale);
 
   return normalized || normalizeTrainingText(layout.defaultText, layout.inputLocale);
 }

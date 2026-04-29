@@ -48,7 +48,7 @@ export const enCopy: AppCopy = {
   finishedText: 'You can repeat this text or go to settings.',
   settingsEyebrow: 'Settings',
   settingsTitle: 'Custom training text',
-  settingsLead: 'Text is lowercased. Characters without commands will be marked in the trainer.',
+  settingsLead: 'Custom text keeps its case. Characters without commands will be marked in the trainer.',
   useCustomText: 'Use custom text',
   textLabel: 'Text',
   save: 'Save',

@@ -19,6 +19,9 @@ describe('app UI', () => {
     clickButton('Начать');
     expect(document.querySelector('.command-banner')?.textContent).toContain('Произнесите команду');
     expect(document.querySelector('.hands-guide')).toBeTruthy();
+    expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain(
+      'hands-from-refs-numbered-v3.svg'
+    );
     expect(document.body.textContent).toContain('Как тренироваться');
     expect(document.body.textContent).toContain('Не смотрите на клавиатуру.');
   });
