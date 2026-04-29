@@ -1,6 +1,6 @@
 import type { KeyboardLayout, KeyboardLayoutId } from '../../types';
 import { createCommandMaps } from './shared';
-import type { CommandTuple } from './shared';
+import type { CommandTuple, DeadKeyCommandConfig } from './shared';
 
 const shiftedChars: Record<string, string> = Object.fromEntries(
   'abcdefghijklmnñopqrstuvwxyz'.split('').map((char) => [char.toLocaleUpperCase('es-ES'), char])
@@ -17,6 +17,8 @@ const commandRows: Record<string, CommandTuple> = {
   i: ['правой, 2-м, вверх', 'right, 2nd, up', 'right', 2, 'вверх', 'up'],
   o: ['правой, 3-м, вверх', 'right, 3rd, up', 'right', 3, 'вверх', 'up'],
   p: ['правой, 4-м, вверх', 'right, 4th, up', 'right', 4, 'вверх', 'up'],
+  '´': ['правой, 4-м, вверх вправо', 'right, 4th, up right', 'right', 4, 'вверх вправо', 'up right'],
+  '¨': ['правой, 4-м, вверх вправо', 'right, 4th, up right', 'right', 4, 'вверх вправо', 'up right'],
 
   a: ['левой, 4-м, на месте', 'left, 4th, in place', 'left', 4, 'на месте', 'in place'],
   s: ['левой, 3-м, на месте', 'left, 3rd, in place', 'left', 3, 'на месте', 'in place'],
@@ -47,6 +49,11 @@ const spainExtraRows: Record<string, CommandTuple> = {
   ç: ['правой, 4-м, далеко вправо', 'right, 4th, far right', 'right', 4, 'далеко вправо', 'far right']
 };
 
+const deadKeyChars: DeadKeyCommandConfig[] = [
+  ...createDeadKeyLetters('´', ['a', 'e', 'i', 'o', 'u'], 'es-ES'),
+  ...createDeadKeyLetters('¨', ['u'], 'es-ES')
+];
+
 export const esEsQwertyLayout = createSpanishLayout({
   id: 'es-es-qwerty',
   inputLocale: 'es-ES',
@@ -56,9 +63,9 @@ export const esEsQwertyLayout = createSpanishLayout({
     es: 'QWERTY española España'
   },
   note: {
-    ru: 'Испанская раскладка Испании. В V1 поддержаны прямые клавиши, без dead keys для ударений.',
-    en: 'Spanish Spain layout. V1 supports direct keys, without dead keys for accents.',
-    es: 'Distribución española de España. V1 admite teclas directas, sin teclas muertas para acentos.'
+    ru: 'Испанская раскладка Испании. В V1 поддержаны прямые клавиши, Shift и dead keys для основных ударений.',
+    en: 'Spanish Spain layout. V1 supports direct keys, Shift, and dead keys for core accents.',
+    es: 'Distribución española de España. V1 admite teclas directas, Shift y teclas muertas para acentos básicos.'
   },
   rows: {
     ...commandRows,
@@ -75,9 +82,9 @@ export const esLatamQwertyLayout = createSpanishLayout({
     es: 'QWERTY española Latinoamérica'
   },
   note: {
-    ru: 'Латиноамериканская испанская раскладка. В V1 поддержаны прямые клавиши, без dead keys для ударений.',
-    en: 'Latin American Spanish layout. V1 supports direct keys, without dead keys for accents.',
-    es: 'Distribución española latinoamericana. V1 admite teclas directas, sin teclas muertas para acentos.'
+    ru: 'Латиноамериканская испанская раскладка. В V1 поддержаны прямые клавиши, Shift и dead keys для основных ударений.',
+    en: 'Latin American Spanish layout. V1 supports direct keys, Shift, and dead keys for core accents.',
+    es: 'Distribución española latinoamericana. V1 admite teclas directas, Shift y teclas muertas para acentos básicos.'
   },
   rows: commandRows
 });
@@ -96,7 +103,39 @@ function createSpanishLayout(config: SpanishLayoutConfig): KeyboardLayout {
     label: config.label,
     note: config.note,
     inputLocale: config.inputLocale,
-    defaultText: 'la mañana clara trae te. una nube gato sonrie. los dedos respiran lento.',
-    commandsByLocale: createCommandMaps(config.id, config.inputLocale, config.rows, shiftedChars)
+    defaultText: 'la mañana clara trae té. una nube gato sonríe. el pingüino respira lento.',
+    commandsByLocale: createCommandMaps(config.id, config.inputLocale, config.rows, shiftedChars, {
+      deadKeyChars
+    })
   };
+}
+
+function createDeadKeyLetters(deadKeyChar: string, baseChars: string[], locale: string): DeadKeyCommandConfig[] {
+  return baseChars.flatMap((baseChar) => {
+    const char = `${baseChar}${deadKeyCombiningMark(deadKeyChar)}`.normalize('NFC');
+    const shiftedChar = char.toLocaleUpperCase(locale);
+
+    return [
+      {
+        char,
+        baseChar,
+        deadKeyChar
+      },
+      {
+        char: shiftedChar,
+        baseChar,
+        deadKeyChar,
+        requiresShift: true
+      }
+    ];
+  });
+}
+
+function deadKeyCombiningMark(deadKeyChar: string): string {
+  const marks: Record<string, string> = {
+    '´': '\u0301',
+    '¨': '\u0308'
+  };
+
+  return marks[deadKeyChar] ?? deadKeyChar;
 }

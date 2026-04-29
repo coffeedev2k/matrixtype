@@ -11,7 +11,7 @@ Use this checklist when adding a new training keyboard layout.
    Use explicit ids such as `pt-br-abnt2`, `fr-fr-azerty`, or `de-de-qwertz`.
 
 3. Decide what is supported in V1.
-   Current V1 support is direct keys plus Shift-derived uppercase. Dead keys, AltGr, compose, IME, and CapsLock-specific behavior are deferred.
+   Current V1 support is direct keys, Shift-derived uppercase, simple AltGr-derived symbols, and simple dead-key-derived symbols. Long compose sequences, IME, and CapsLock-specific behavior are deferred.
 
 4. Add the layout pack.
    Provide labels and notes for `ru`, `en`, and `es`. Keep default text limited to supported characters.

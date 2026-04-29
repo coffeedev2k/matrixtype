@@ -2,6 +2,26 @@ import { createDirectKeyLayout } from './shared';
 
 const qwertyRows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
 const qwertzRows = ['qwertzuiop', 'asdfghjkl', 'yxcvbnm'];
+const polishAltGrChars = {
+  ą: 'a',
+  ć: 'c',
+  ę: 'e',
+  ł: 'l',
+  ń: 'n',
+  ó: 'o',
+  ś: 's',
+  ź: 'x',
+  ż: 'z',
+  Ą: 'A',
+  Ć: 'C',
+  Ę: 'E',
+  Ł: 'L',
+  Ń: 'N',
+  Ó: 'O',
+  Ś: 'S',
+  Ź: 'X',
+  Ż: 'Z'
+};
 
 export const ptBrAbnt2Layout = createDirectKeyLayout({
   id: 'pt-br-abnt2',
@@ -97,12 +117,13 @@ export const plPlProgrammersLayout = createDirectKeyLayout({
     es: 'Polaca programadores'
   },
   note: {
-    ru: 'Польская программистская раскладка. В V1: прямые буквы и Shift; польские знаки через AltGr позже.',
-    en: 'Polish Programmers layout. V1: direct letters and Shift; Polish signs through AltGr later.',
-    es: 'Distribución polaca de programadores. V1: letras directas y Shift; signos polacos con AltGr después.'
+    ru: 'Польская программистская раскладка. В V1: прямые буквы, Shift и польские знаки через AltGr.',
+    en: 'Polish Programmers layout. V1: direct letters, Shift, and Polish signs through AltGr.',
+    es: 'Distribución polaca de programadores. V1: letras directas, Shift y signos polacos con AltGr.'
   },
-  defaultText: 'cieply ranek herbata czeka chmura kot palce oddychaja spokojnie',
-  rows: qwertyRows
+  defaultText: 'ciepły ranek herbata czeka chmura kot palce oddychają spokojnie',
+  rows: qwertyRows,
+  altGrChars: polishAltGrChars
 });
 
 export const ukUaJcukenLayout = createDirectKeyLayout({

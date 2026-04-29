@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from 'vitest';
+import { createAllLayoutCorpora } from './layoutCorpus';
 
 describe('app UI', () => {
   it('renders the three app screens without a render crash', async () => {
@@ -9,9 +10,7 @@ describe('app UI', () => {
     expect(document.body.textContent).toContain('Учимся слепой печати, как в Матрице');
     expect(document.body.textContent).toContain('Нумерация пальцев');
     expect(document.body.textContent).toContain('На левой руке слева направо: 4, 3, 2, 1.');
-    expect(document.querySelector('.reference-figure img')?.getAttribute('src')).toContain(
-      'keyboard-hands-reference.png'
-    );
+    expect(document.querySelector<HTMLImageElement>('.keyboard-reference img')?.src).toContain('keyboard.png');
     expect(document.querySelector('.share-links')?.textContent).toContain('Telegram');
     expect(document.body.textContent).not.toContain('MatrixType V1');
 
@@ -23,10 +22,11 @@ describe('app UI', () => {
     clickButton('Назад');
     clickButton('Начать');
     expect(document.querySelector('.command-banner')?.textContent).toContain('Произнесите команду');
+    expect(document.querySelector('.input-capture')).toBeTruthy();
     expect(document.querySelector('.stats-grid')?.textContent).toContain('Время');
     expect(document.querySelector('.hands-guide')).toBeTruthy();
     expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain(
-      'hands-from-refs-numbered-v3.svg'
+      'hands-numbered-v3.svg'
     );
     expect(document.body.textContent).toContain('Как тренироваться');
     expect(document.body.textContent).toContain('Не смотрите на клавиатуру.');
@@ -127,6 +127,30 @@ describe('app UI', () => {
     expect(document.body.textContent).not.toContain('unsupported character');
   });
 
+  it('supports Spanish dead-key characters through text input events', async () => {
+    await bootApp('es-ES');
+
+    clickButton('Texto propio');
+
+    const textarea = document.querySelector<HTMLTextAreaElement>('.text-editor');
+    const checkbox = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    textarea!.value = 'á';
+    checkbox!.checked = true;
+    clickButton('Guardar');
+
+    expect(document.querySelector('.command-banner')?.textContent).toContain('primero');
+    expect(document.querySelector('.command-banner')?.textContent).toContain('á');
+    expect(document.body.textContent).not.toContain('símbolo no compatible');
+
+    const input = document.querySelector<HTMLTextAreaElement>('.input-capture');
+    expect(input).toBeTruthy();
+
+    input!.value = 'á';
+    input!.dispatchEvent(new InputEvent('input', { data: 'á', inputType: 'insertText', bubbles: true }));
+
+    expect(document.querySelector('.command-banner')?.textContent).toContain('listo');
+  });
+
   it('stores active typing stats and shows an error review', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(1000);
@@ -155,6 +179,44 @@ describe('app UI', () => {
 
     vi.useRealTimers();
   });
+
+  it('completes generated symbol corpus for every keyboard layout through the custom text flow', async () => {
+    await bootApp('en-US');
+
+    for (const corpus of createAllLayoutCorpora()) {
+      selectLayout(corpus.layout.id);
+      openSettingsFromWelcome();
+      setCustomText(corpus.text);
+      clickButton('Save');
+
+      expect(document.body.textContent).not.toContain('unsupported character');
+
+      typeTextThroughCapture(corpus.text);
+
+      expect(document.querySelector('.command-banner')?.textContent, corpus.layout.id).toContain('done');
+
+      clickButton('Back');
+    }
+  }, 30000);
+
+  it('completes Spanish and Polish sample texts with compound symbols', async () => {
+    await bootApp('en-US');
+
+    selectLayout('es-latam-qwerty');
+    openSettingsFromWelcome();
+    setCustomText('mañana café pingüino');
+    clickButton('Save');
+    typeTextThroughCapture('mañana café pingüino');
+    expect(document.querySelector('.command-banner')?.textContent).toContain('done');
+
+    clickButton('Back');
+    selectLayout('pl-pl-programmers');
+    openSettingsFromWelcome();
+    setCustomText('ciepły dzień');
+    clickButton('Save');
+    typeTextThroughCapture('ciepły dzień');
+    expect(document.querySelector('.command-banner')?.textContent).toContain('done');
+  });
 });
 
 async function bootApp(language = 'ru-RU'): Promise<void> {
@@ -181,6 +243,39 @@ function clickButton(text: string): void {
 
   expect(button).toBeTruthy();
   button?.click();
+}
+
+function selectLayout(layoutId: string): void {
+  const layoutSelect = document.querySelector<HTMLSelectElement>('#keyboard-layout');
+
+  expect(layoutSelect).toBeTruthy();
+  layoutSelect!.value = layoutId;
+  layoutSelect!.dispatchEvent(new Event('change'));
+}
+
+function openSettingsFromWelcome(): void {
+  clickButton('Custom text');
+}
+
+function setCustomText(text: string): void {
+  const textarea = document.querySelector<HTMLTextAreaElement>('.text-editor');
+  const checkbox = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
+
+  expect(textarea).toBeTruthy();
+  expect(checkbox).toBeTruthy();
+
+  textarea!.value = text;
+  checkbox!.checked = true;
+}
+
+function typeTextThroughCapture(text: string): void {
+  for (const char of text) {
+    const input = document.querySelector<HTMLTextAreaElement>('.input-capture');
+
+    expect(input, `Missing input capture for ${char}`).toBeTruthy();
+    input!.value = char;
+    input!.dispatchEvent(new InputEvent('input', { data: char, inputType: 'insertText', bubbles: true }));
+  }
 }
 
 function fingerNumbersForHand(hand: 'left' | 'right'): string[] {

@@ -30,8 +30,8 @@ import type {
 
 type Screen = 'welcome' | 'trainer' | 'settings';
 
-const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands-from-refs-numbered-v3.svg`;
-const referenceImageAsset = `${import.meta.env.BASE_URL}assets/keyboard-hands-reference.png`;
+const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands-numbered-v3.svg`;
+const keyboardAsset = `${import.meta.env.BASE_URL}assets/keyboard.png`;
 const activeInputPauseMs = 5000;
 const skillTargetMs = 3 * 60 * 60 * 1000;
 const handGuideFingerLabels: Record<Hand, Record<FingerNumber, { x: number; y: number }>> = {
@@ -72,21 +72,40 @@ let state: AppState = {
   trainer: createTrainerState(''),
   flashError: false
 };
+let pendingDeadKey = false;
+let lastCompositionData: string | null = null;
 
 state.preferences.selection = sanitizeSelection(state.config, state.preferences.selection);
 
 window.addEventListener('keydown', (event) => {
-  if (state.screen !== 'trainer' || event.ctrlKey || event.metaKey || event.altKey) {
+  if (state.screen !== 'trainer' || event.ctrlKey || event.metaKey) {
+    return;
+  }
+
+  if (event.key === 'Dead') {
+    pendingDeadKey = true;
+    return;
+  }
+
+  if (event.key === 'Shift' || event.key === 'AltGraph' || event.key === 'Compose') {
+    handleTrainerInput(event.key);
+    return;
+  }
+
+  if (event.altKey || pendingDeadKey) {
     return;
   }
 
   if (event.key.length === 1) {
     event.preventDefault();
+    handleTrainerInput(event.key);
   }
+});
 
+function handleTrainerInput(rawInput: string): void {
   const commandMap = getActiveCommandMap(state);
   const previousTrainer = state.trainer;
-  const result = applyInput(previousTrainer, commandMap, event.key);
+  const result = applyInput(previousTrainer, commandMap, rawInput);
   const preferences =
     (result.outcome === 'correct' || result.outcome === 'complete') && result.state.cursor > previousTrainer.cursor
       ? updateStatsForCorrectInput(state.preferences, previousTrainer)
@@ -101,11 +120,10 @@ window.addEventListener('keydown', (event) => {
 
   if (result.outcome === 'incorrect') {
     flashError();
-    return;
+  } else {
+    render();
   }
-
-  render();
-});
+}
 
 function render(): void {
   const copy = getCopy(state);
@@ -118,6 +136,7 @@ function render(): void {
     app.append(renderWelcome(copy));
   } else if (state.screen === 'trainer') {
     app.append(renderTrainer(copy));
+    focusTrainerInput();
   } else {
     app.append(renderSettings(copy));
   }
@@ -151,7 +170,7 @@ function renderWelcome(copy: AppCopy): HTMLElement {
         el('div', { className: 'notice-list' }, renderNotice(copy.architectureNote)),
         renderInfoList(copy.methodStepsTitle, copy.methodSteps),
         renderInfoList(copy.fingerRulesTitle, copy.fingerRules),
-        renderReferenceImage()
+        renderKeyboardReference()
       ),
       el(
         'aside',
@@ -224,6 +243,7 @@ function renderTrainer(copy: AppCopy): HTMLElement {
           el('span', {}, `${progress}%`),
           el('span', {}, `${copy.errorCount}: ${state.trainer.errorCount}`)
         ),
+        renderInputCapture(),
         renderStats(state.preferences.stats),
         el('div', { className: 'target-text', ariaLabel: copy.textLabel }, ...renderTextSpans()),
         el('div', { className: 'typed-line', ariaLabel: copy.textLabel }, state.trainer.typedText || ' '),
@@ -422,15 +442,14 @@ function renderInfoList(title: string, items: string[], density: 'normal' | 'com
   );
 }
 
-function renderReferenceImage(): HTMLElement {
+function renderKeyboardReference(): HTMLElement {
   return el(
     'figure',
-    { className: 'reference-figure' },
+    { className: 'keyboard-reference' },
     el('img', {
-      src: referenceImageAsset,
-      alt: extraLabel('referenceAlt')
-    }),
-    el('figcaption', {}, extraLabel('referenceCaption'))
+      src: keyboardAsset,
+      alt: extraLabel('keyboardAlt')
+    })
   );
 }
 
@@ -556,6 +575,58 @@ function renderThemeSelect(): HTMLSelectElement {
   }
 
   return select;
+}
+
+function renderInputCapture(): HTMLTextAreaElement {
+  const input = el('textarea', {
+    className: 'input-capture',
+    ariaLabel: 'typing input',
+    autoCapitalize: 'off',
+    autoComplete: 'off',
+    spellcheck: false
+  }) as HTMLTextAreaElement;
+
+  input.addEventListener('input', (event) => {
+    const data = (event as InputEvent).data ?? input.value;
+    input.value = '';
+
+    if (!data) {
+      return;
+    }
+
+    if (data === lastCompositionData) {
+      lastCompositionData = null;
+      pendingDeadKey = false;
+      return;
+    }
+
+    pendingDeadKey = false;
+    handleInputText(data);
+  });
+
+  input.addEventListener('compositionend', (event) => {
+    if (!event.data) {
+      return;
+    }
+
+    lastCompositionData = event.data;
+    pendingDeadKey = false;
+    input.value = '';
+    handleInputText(event.data);
+  });
+
+  return input;
+}
+
+function handleInputText(text: string): void {
+  for (const char of Array.from(text)) {
+    handleTrainerInput(char);
+  }
+}
+
+function focusTrainerInput(): void {
+  const input = app.querySelector<HTMLTextAreaElement>('.input-capture');
+  input?.focus({ preventScroll: true });
 }
 
 function renderHands(command: KeyCommand | null): SVGSVGElement {
@@ -781,8 +852,7 @@ function isAppLocale(value: unknown): value is AppLocale {
 }
 
 type ExtraLabelKey =
-  | 'referenceAlt'
-  | 'referenceCaption'
+  | 'keyboardAlt'
   | 'shareTitle'
   | 'shareText'
   | 'statsTitle'
@@ -797,35 +867,20 @@ type ExtraLabelKey =
   | 'themePaper';
 
 const extraLabels: Record<ExtraLabelKey, LocalizedText> = {
-  referenceAlt: {
-    ru: 'Схема рук и клавиатуры для метода слепой печати',
-    en: 'Hands and keyboard diagram for the blind typing method',
-    es: 'Diagrama de manos y teclado para el método de mecanografía',
-    pt: 'Diagrama de mãos e teclado para o método de digitação',
-    fr: 'Schéma des mains et du clavier pour la méthode de dactylographie',
-    de: 'Hände- und Tastaturdiagramm für die Blindschreibmethode',
-    it: 'Schema di mani e tastiera per il metodo di dattilografia',
-    pl: 'Schemat dłoni i klawiatury dla metody pisania bezwzrokowego',
-    uk: 'Схема рук і клавіатури для методу сліпого друку',
-    tr: 'Bakmadan yazma yöntemi için el ve klavye şeması',
-    nl: 'Schema van handen en toetsenbord voor blind typen',
-    cs: 'Schéma rukou a klávesnice pro metodu psaní poslepu',
-    sk: 'Schéma rúk a klávesnice pre metódu písania naslepo'
-  },
-  referenceCaption: {
-    ru: 'Смотрите на схему, чтобы понять руки и нумерацию пальцев, но во время тренировки не смотрите на клавиатуру.',
-    en: 'Use the diagram to understand the hands and finger numbers, then train without looking at the keyboard.',
-    es: 'Usa el diagrama para entender manos y números de dedos; al entrenar, no mires el teclado.',
-    pt: 'Use o diagrama para entender mãos e números dos dedos; ao treinar, não olhe para o teclado.',
-    fr: 'Utilisez le schéma pour comprendre les mains et les numéros des doigts, puis entraînez-vous sans regarder le clavier.',
-    de: 'Nutze das Diagramm für Hände und Fingernummern; trainiere danach ohne Blick auf die Tastatur.',
-    it: 'Usa lo schema per capire mani e numeri delle dita, poi allenati senza guardare la tastiera.',
-    pl: 'Użyj schematu, aby zrozumieć dłonie i numery palców, potem ćwicz bez patrzenia na klawiaturę.',
-    uk: 'Використайте схему, щоб зрозуміти руки й номери пальців, а далі тренуйтеся не дивлячись на клавіатуру.',
-    tr: 'Elleri ve parmak numaralarını anlamak için şemayı kullan, sonra klavyeye bakmadan çalış.',
-    nl: 'Gebruik het schema om handen en vingernummers te begrijpen; oefen daarna zonder naar het toetsenbord te kijken.',
-    cs: 'Pomocí schématu pochop ruce a čísla prstů, potom trénuj bez pohledu na klávesnici.',
-    sk: 'Pomocou schémy pochop ruky a čísla prstov, potom trénuj bez pozerania na klávesnicu.'
+  keyboardAlt: {
+    ru: 'Схема клавиатуры и рук для слепой печати',
+    en: 'Keyboard and hands diagram for touch typing',
+    es: 'Diagrama de teclado y manos para mecanografía',
+    pt: 'Diagrama de teclado e mãos para digitação',
+    fr: 'Schéma du clavier et des mains pour la dactylographie',
+    de: 'Tastatur- und Händediagramm für Blindschreiben',
+    it: 'Schema di tastiera e mani per dattilografia',
+    pl: 'Schemat klawiatury i dłoni do pisania bezwzrokowego',
+    uk: 'Схема клавіатури й рук для сліпого друку',
+    tr: 'Bakmadan yazma için klavye ve el şeması',
+    nl: 'Schema van toetsenbord en handen voor blind typen',
+    cs: 'Schéma klávesnice a rukou pro psaní poslepu',
+    sk: 'Schéma klávesnice a rúk pre písanie naslepo'
   },
   shareTitle: {
     ru: 'Поделиться',

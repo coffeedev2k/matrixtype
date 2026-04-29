@@ -15,8 +15,17 @@ interface CommandLocaleData {
   right: string;
   space: string;
   shift: string;
+  altGr: string;
   finger: (fingerNumber: 1 | 2 | 3 | 4) => string;
+  compound: (firstCommand: string, secondCommand: string) => string;
   positions: Record<string, string>;
+}
+
+export interface DeadKeyCommandConfig {
+  char: string;
+  baseChar: string;
+  deadKeyChar: string;
+  requiresShift?: true;
 }
 
 const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
@@ -25,7 +34,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'правой',
     space: 'пробел',
     shift: 'с Shift',
+    altGr: 'с AltGr',
     finger: (fingerNumber) => `${fingerNumber}-м`,
+    compound: (firstCommand, secondCommand) => `сначала ${firstCommand}, затем ${secondCommand}`,
     positions: {}
   },
   en: {
@@ -33,7 +44,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'right',
     space: 'space',
     shift: 'with Shift',
+    altGr: 'with AltGr',
     finger: englishOrdinal,
+    compound: (firstCommand, secondCommand) => `first ${firstCommand}, then ${secondCommand}`,
     positions: {}
   },
   es: {
@@ -41,7 +54,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'derecha',
     space: 'espacio',
     shift: 'con Shift',
+    altGr: 'con AltGr',
     finger: (fingerNumber) => `${fingerNumber}.º`,
+    compound: (firstCommand, secondCommand) => `primero ${firstCommand}, luego ${secondCommand}`,
     positions: {
       up: 'arriba',
       'up right': 'arriba derecha',
@@ -70,7 +85,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'direita',
     space: 'espaço',
     shift: 'com Shift',
+    altGr: 'com AltGr',
     finger: (fingerNumber) => `${fingerNumber}.º`,
+    compound: (firstCommand, secondCommand) => `primeiro ${firstCommand}, depois ${secondCommand}`,
     positions: {
       up: 'para cima',
       'up right': 'para cima direita',
@@ -92,7 +109,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'droite',
     space: 'espace',
     shift: 'avec Shift',
+    altGr: 'avec AltGr',
     finger: (fingerNumber) => `${fingerNumber}e`,
+    compound: (firstCommand, secondCommand) => `d'abord ${firstCommand}, puis ${secondCommand}`,
     positions: {
       up: 'haut',
       'up right': 'haut droite',
@@ -114,7 +133,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'rechts',
     space: 'Leertaste',
     shift: 'mit Shift',
+    altGr: 'mit AltGr',
     finger: (fingerNumber) => `${fingerNumber}.`,
+    compound: (firstCommand, secondCommand) => `zuerst ${firstCommand}, dann ${secondCommand}`,
     positions: {
       up: 'oben',
       'up right': 'oben rechts',
@@ -136,7 +157,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'destra',
     space: 'spazio',
     shift: 'con Shift',
+    altGr: 'con AltGr',
     finger: (fingerNumber) => `${fingerNumber}.º`,
+    compound: (firstCommand, secondCommand) => `prima ${firstCommand}, poi ${secondCommand}`,
     positions: {
       up: 'su',
       'up right': 'su destra',
@@ -158,7 +181,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'prawą',
     space: 'spacja',
     shift: 'z Shift',
+    altGr: 'z AltGr',
     finger: (fingerNumber) => `${fingerNumber}.`,
+    compound: (firstCommand, secondCommand) => `najpierw ${firstCommand}, potem ${secondCommand}`,
     positions: {
       up: 'w górę',
       'up right': 'w górę prawo',
@@ -180,7 +205,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'правою',
     space: 'пробіл',
     shift: 'з Shift',
+    altGr: 'з AltGr',
     finger: (fingerNumber) => `${fingerNumber}-м`,
+    compound: (firstCommand, secondCommand) => `спочатку ${firstCommand}, потім ${secondCommand}`,
     positions: {
       up: 'вгору',
       'up right': 'вгору праворуч',
@@ -202,7 +229,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'sağ',
     space: 'boşluk',
     shift: 'Shift ile',
+    altGr: 'AltGr ile',
     finger: (fingerNumber) => `${fingerNumber}.`,
+    compound: (firstCommand, secondCommand) => `önce ${firstCommand}, sonra ${secondCommand}`,
     positions: {
       up: 'yukarı',
       'up right': 'yukarı sağa',
@@ -224,7 +253,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'rechts',
     space: 'spatie',
     shift: 'met Shift',
+    altGr: 'met AltGr',
     finger: (fingerNumber) => `${fingerNumber}e`,
+    compound: (firstCommand, secondCommand) => `eerst ${firstCommand}, daarna ${secondCommand}`,
     positions: {
       up: 'omhoog',
       'up right': 'omhoog rechts',
@@ -246,7 +277,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'pravou',
     space: 'mezerník',
     shift: 'se Shiftem',
+    altGr: 's AltGr',
     finger: (fingerNumber) => `${fingerNumber}.`,
+    compound: (firstCommand, secondCommand) => `nejdřív ${firstCommand}, potom ${secondCommand}`,
     positions: {
       up: 'nahoru',
       'up right': 'nahoru doprava',
@@ -268,7 +301,9 @@ const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
     right: 'pravou',
     space: 'medzerník',
     shift: 'so Shiftom',
+    altGr: 's AltGr',
     finger: (fingerNumber) => `${fingerNumber}.`,
+    compound: (firstCommand, secondCommand) => `najprv ${firstCommand}, potom ${secondCommand}`,
     positions: {
       up: 'hore',
       'up right': 'hore doprava',
@@ -335,6 +370,8 @@ export interface DirectKeyLayoutConfig {
   rows: string[];
   extraRows?: Record<string, CommandTuple>;
   shiftedChars?: Record<string, string>;
+  altGrChars?: Record<string, string>;
+  deadKeyChars?: DeadKeyCommandConfig[];
 }
 
 export function createCommandFromTuple(appLocale: AppLocale, tuple: CommandTuple): KeyCommand {
@@ -342,7 +379,8 @@ export function createCommandFromTuple(appLocale: AppLocale, tuple: CommandTuple
   const position =
     appLocale === 'ru' ? ruPosition : appLocale === 'en' ? enPosition : translatePosition(appLocale, enPosition);
   const command: KeyCommand = {
-    spokenCommand: createSpokenCommand(appLocale, tuple, position)
+    spokenCommand: createSpokenCommand(appLocale, tuple, position),
+    inputKind: 'direct'
   };
 
   if (hand) {
@@ -378,7 +416,61 @@ export function addShiftCommands(
       ...baseCommand,
       spokenCommand: `${baseCommand.spokenCommand}, ${shiftSuffix}`,
       baseChar,
+      inputKind: 'shift',
       requiresShift: true
+    };
+  }
+}
+
+export function addAltGrCommands(
+  commands: Record<string, KeyCommand>,
+  appLocale: AppLocale,
+  altGrChars: Record<string, string>
+): void {
+  const altGrSuffix = commandLocaleData[appLocale].altGr;
+
+  for (const [char, baseChar] of Object.entries(altGrChars)) {
+    const baseCommand = commands[baseChar];
+
+    if (!baseCommand) {
+      continue;
+    }
+
+    commands[char] = {
+      ...baseCommand,
+      spokenCommand: `${baseCommand.spokenCommand}, ${altGrSuffix}`,
+      baseChar,
+      inputKind: 'altGr',
+      requiresAltGr: true
+    };
+  }
+}
+
+export function addDeadKeyCommands(
+  commands: Record<string, KeyCommand>,
+  appLocale: AppLocale,
+  deadKeyChars: DeadKeyCommandConfig[]
+): void {
+  const compound = commandLocaleData[appLocale].compound;
+
+  for (const config of deadKeyChars) {
+    const deadKeyCommand = commands[config.deadKeyChar];
+    const shiftedBaseChar = config.baseChar.toLocaleUpperCase();
+    const baseCommand = config.requiresShift
+      ? commands[shiftedBaseChar] ?? commands[config.baseChar]
+      : commands[config.baseChar];
+
+    if (!deadKeyCommand || !baseCommand) {
+      continue;
+    }
+
+    commands[config.char] = {
+      ...baseCommand,
+      spokenCommand: compound(deadKeyCommand.spokenCommand, baseCommand.spokenCommand),
+      baseChar: config.baseChar,
+      inputKind: 'deadKey',
+      deadKeyChar: config.deadKeyChar,
+      ...(config.requiresShift ? { requiresShift: true as const } : {})
     };
   }
 }
@@ -397,20 +489,29 @@ export function createDirectKeyLayout(config: DirectKeyLayoutConfig): KeyboardLa
     note: config.note,
     inputLocale: config.inputLocale,
     defaultText: config.defaultText,
-    commandsByLocale: createCommandMaps(config.id, config.inputLocale, rows, shiftedChars)
+    commandsByLocale: createCommandMaps(config.id, config.inputLocale, rows, shiftedChars, {
+      altGrChars: config.altGrChars,
+      deadKeyChars: config.deadKeyChars
+    })
   };
+}
+
+interface CommandMapOptions {
+  altGrChars?: Record<string, string>;
+  deadKeyChars?: DeadKeyCommandConfig[];
 }
 
 export function createCommandMaps(
   keyboardLayout: KeyboardLayoutId,
   inputLocale: string,
   rows: Record<string, CommandTuple>,
-  shiftedChars: Record<string, string>
+  shiftedChars: Record<string, string>,
+  options: CommandMapOptions = {}
 ): Record<AppLocale, KeyCommandMap> {
   return Object.fromEntries(
     appLocales.map((appLocale) => [
       appLocale,
-      createCommandMap(keyboardLayout, inputLocale, appLocale, rows, shiftedChars)
+      createCommandMap(keyboardLayout, inputLocale, appLocale, rows, shiftedChars, options)
     ])
   ) as Record<AppLocale, KeyCommandMap>;
 }
@@ -434,7 +535,8 @@ function createCommandMap(
   inputLocale: string,
   appLocale: AppLocale,
   rows: Record<string, CommandTuple>,
-  shiftedChars: Record<string, string>
+  shiftedChars: Record<string, string>,
+  options: CommandMapOptions
 ): KeyCommandMap {
   const commands: Record<string, KeyCommand> = {};
 
@@ -443,6 +545,8 @@ function createCommandMap(
   }
 
   addShiftCommands(commands, appLocale, shiftedChars);
+  addAltGrCommands(commands, appLocale, options.altGrChars ?? {});
+  addDeadKeyCommands(commands, appLocale, options.deadKeyChars ?? []);
 
   return {
     id: `${keyboardLayout}-${appLocale}`,

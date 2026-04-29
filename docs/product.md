@@ -10,4 +10,6 @@ The welcome screen should meet new learners in their browser language when that 
 
 Custom text keeps its case. Uppercase letters are supported as Shift-derived symbols: the learner still follows the body command for the base key, with an added Shift phrase.
 
+Some languages need compound input. Spanish accented vowels use dead keys, and Polish Programmer diacritics use AltGr. MatrixType supports these as open command-map data while keeping the body command model based on one active hand, one numbered finger, and one movement.
+
 The trainer tracks active practice time, typed characters, typed words, and word speed locally in the browser. If the learner stops typing for more than 5 seconds, practice time pauses. The current product target is 3 hours of active practice time.

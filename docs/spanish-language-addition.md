@@ -21,14 +21,15 @@ Both layouts are QWERTY and close to the current English layout for letters. Thi
 
 - Added both Latin American and Spain layouts because they are distinct OS-level Spanish layouts and both are significant for real users.
 - Default Spanish keyboard for Spanish UI is `es-latam-qwerty`, because Latin America covers many Spanish-speaking countries.
-- V1 Spanish layout supports direct keys only: letters, `ñ`, space, and basic punctuation.
-- Accented vowels such as `á`, `é`, `í`, `ó`, `ú` are not yet supported because they require dead-key/compose behavior. This should be designed separately before adding accent-heavy text.
+- V1 Spanish layout supports direct keys, Shift uppercase, and a simple dead-key layer for `áéíóúÁÉÍÓÚüÜ`.
+- `ñÑ` remains a direct key. Accented vowels use a composed command: first the dead key, then the base vowel.
 
 ## Implementation Friction
 
 - Adding an interface language touches more files than adding only a keyboard layout because `AppLocale` is used in labels, notes, command maps, UI copy, browser-language detection, and tests.
 - The easiest reusable improvement was `src/data/layouts/shared.ts`, which generates Spanish spoken commands from the existing method fields: `hand + fingerNumber + position`.
 - The current app model handled the new layouts cleanly once `AppLocale` and `KeyboardLayoutId` were widened.
+- Dead-key support required a small input adapter because browser `keydown` reports the dead key as `Dead`; the final composed character is received through text input/composition events.
 
 ## Files Changed
 
@@ -43,5 +44,5 @@ Both layouts are QWERTY and close to the current English layout for letters. Thi
 
 ## Next Steps
 
-- Design dead-key support before using accented Spanish training texts.
+- Expand the same compound-input model to Portuguese, Dutch, French, Czech, and Slovak.
 - Use `docs/add-keyboard-layout.md` for future keyboard-first layout additions.

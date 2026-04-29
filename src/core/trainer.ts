@@ -67,7 +67,7 @@ export function applyInput(
     return { state, outcome: 'complete' };
   }
 
-  if (!isPrintableInput(rawInput)) {
+  if (isIgnoredInput(rawInput) || !isPrintableInput(rawInput)) {
     return { state, outcome: 'ignored' };
   }
 
@@ -112,6 +112,10 @@ export function applyInput(
 
 function isPrintableInput(input: string): boolean {
   return input.length === 1;
+}
+
+function isIgnoredInput(input: string): boolean {
+  return input === 'Shift' || input === 'Dead' || input === 'AltGraph' || input === 'Compose';
 }
 
 function addCharError(errorsByChar: Record<string, number>, char: string): Record<string, number> {

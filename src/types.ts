@@ -30,13 +30,18 @@ export type FingerNumber = 1 | 2 | 3 | 4;
 
 export type VisualTheme = 'matrix' | 'paper';
 
+export type InputKind = 'direct' | 'shift' | 'altGr' | 'deadKey';
+
 export interface KeyCommand {
   spokenCommand: string;
   hand?: Hand;
   fingerNumber?: FingerNumber;
   position?: string;
+  inputKind?: InputKind;
   baseChar?: string;
   requiresShift?: true;
+  requiresAltGr?: true;
+  deadKeyChar?: string;
 }
 
 export interface KeyCommandMap {

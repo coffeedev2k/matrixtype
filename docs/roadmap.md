@@ -9,15 +9,16 @@ Next useful steps:
 - Add a movement marker near the active finger: a circled cross for "in place" and path arrows for directional commands.
 - Clarify the command grammar in the trainer flow: hand means which hand moves, number means the finger counted from the thumb, and position means the movement of that target finger.
 - Design movement arrows as grid-step paths. Example: down-right is one step down and one step right; far up-left can be two repeated up-left steps. This should make the command system feel complete across the keyboard.
-- Design dead-key support for Spanish accents before using accent-heavy Spanish texts.
+- Expand compound input support to Portuguese, Dutch, French, Czech, and Slovak.
 - Add a public command-map editor for contributors, so new layouts can be reviewed without touching the trainer engine.
+- Add real browser E2E tests with Playwright if jsdom stops covering focus/input regressions well enough.
 
 Done:
 
 - Replaced the welcome headline with the longer Matrix/black-belt learning promise.
 - Added multilingual SEO metadata, Open Graph/Twitter metadata, and `hreflang` tags to `index.html`.
 - Added share links for Telegram, WhatsApp, X, and email on the welcome screen.
-- Added the keyboard-and-hands reference image from `refs/123.png` to the welcome screen as `public/assets/keyboard-hands-reference.png`.
+- Added `public/assets/keyboard.png` to the welcome screen as the learner-facing keyboard and hands reference.
 - Added a compact instruction panel on the trainer screen with the current rule: say the command, feel the movement, press the key.
 - Added an error review panel that shows the symbols with the most wrong attempts in the current session.
 - Added trainer statistics on the trainer screen: active typing time, typed characters, typed words, and word speed.
@@ -26,7 +27,11 @@ Done:
 - Added a 3-hour skill target: before the target the time card is yellow, after the target it becomes blue and shows three fireworks.
 - Added tested visual themes in settings: `Matrix` and `Paper`.
 - Replaced demo/test training texts with original calm text variants about morning, tea, a cat-shaped cloud, breathing, and patient fingers. Texts avoid copyrighted lyrics and unsupported dead-key/AltGr characters.
-- Replaced the manually drawn trainer hands with `public/assets/hands-from-refs-numbered-v3.svg` as the base visual.
+- Added simple compound input support: direct keys, Shift-derived keys, AltGr-derived keys, and dead-key-derived characters.
+- Added Spanish dead-key commands for `áéíóúÁÉÍÓÚüÜ`, and kept `ñÑ` as direct keys.
+- Added Polish Programmer AltGr commands for `ąćęłńóśźż` and uppercase variants.
+- Added app-level integration tests that generate a supported symbol corpus for every layout, set it as custom text, type it through the trainer input adapter, and verify completion.
+- Replaced the manually drawn trainer hands with `public/assets/hands-numbered-v3.svg` as the base visual.
 - The trainer overlays active palm and active numbered finger highlights on top of that vector asset using only `hand + fingerNumber`.
 - Custom training text keeps its original case so advanced input behavior can be tested. Default layout texts still use V1 lowercase normalization.
 - The trainer desaturates the hand asset dynamically and highlights the active hand and active finger in red using asset-derived paths.

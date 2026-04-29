@@ -11,6 +11,7 @@ import {
 import { trainerConfig } from '../src/data/config';
 import { appLocales } from '../src/types';
 import type { KeyCommandMap } from '../src/types';
+import { createAllLayoutCorpora, getLayoutCorpus } from './layoutCorpus';
 
 const commandMap: KeyCommandMap = {
   id: 'test',
@@ -115,6 +116,17 @@ describe('trainer core', () => {
     expect(result.outcome).toBe('ignored');
     expect(result.state.cursor).toBe(0);
     expect(result.state.errorCount).toBe(0);
+  });
+
+  it('ignores standalone Dead and AltGraph without counting an error', () => {
+    const state = createTrainerState('А');
+    const deadResult = applyInput(state, commandMap, 'Dead');
+    const altGrResult = applyInput(state, commandMap, 'AltGraph');
+
+    expect(deadResult.outcome).toBe('ignored');
+    expect(deadResult.state.errorCount).toBe(0);
+    expect(altGrResult.outcome).toBe('ignored');
+    expect(altGrResult.state.errorCount).toBe(0);
   });
 
   it('reports unsupported characters without crashing', () => {
@@ -253,6 +265,47 @@ describe('trainer core', () => {
     });
   });
 
+  it('adds Spanish acute dead-key commands', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'es-latam-qwerty');
+    const command = layout?.commandsByLocale.ru.commands['á'];
+
+    expect(command).toMatchObject({
+      inputKind: 'deadKey',
+      baseChar: 'a',
+      deadKeyChar: '´',
+      hand: 'left',
+      fingerNumber: 4
+    });
+    expect(command?.spokenCommand).toContain('сначала правой, 4-м, вверх вправо');
+    expect(command?.spokenCommand).toContain('затем левой, 4-м, на месте');
+  });
+
+  it('advances Spanish dead-key output only on exact composed character', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'es-latam-qwerty');
+    const commandMap = layout!.commandsByLocale.es;
+    const correctResult = applyInput(createTrainerState('á'), commandMap, 'á');
+    const wrongResult = applyInput(createTrainerState('á'), commandMap, 'a');
+
+    expect(correctResult.outcome).toBe('complete');
+    expect(correctResult.state.typedText).toBe('á');
+    expect(wrongResult.outcome).toBe('incorrect');
+    expect(wrongResult.state.cursor).toBe(0);
+  });
+
+  it('adds Polish AltGr commands over programmer layout', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'pl-pl-programmers');
+    const command = layout?.commandsByLocale.en.commands['ł'];
+
+    expect(command).toMatchObject({
+      inputKind: 'altGr',
+      baseChar: 'l',
+      requiresAltGr: true,
+      hand: 'right',
+      fingerNumber: 3
+    });
+    expect(command?.spokenCommand).toContain('with AltGr');
+  });
+
   it('keeps Spain and Latin American Spanish keyboard layouts separate', () => {
     expect(trainerConfig.keyboardLayouts.map((layout) => layout.id)).toEqual(
       expect.arrayContaining(['es-es-qwerty', 'es-latam-qwerty'])
@@ -300,6 +353,35 @@ describe('trainer core', () => {
         expect(commandMap[char], `${layout.id} is missing ${char}`).toBeTruthy();
       }
     }
+  });
+
+  it('generates supported integration corpus for every layout', () => {
+    for (const corpus of createAllLayoutCorpora()) {
+      const commandMap = corpus.layout.commandsByLocale.en.commands;
+
+      expect(corpus.chars.length, corpus.layout.id).toBeGreaterThan(0);
+      expect(corpus.text.length, corpus.layout.id).toBeGreaterThan(0);
+
+      for (const char of corpus.text) {
+        expect(commandMap[char], `${corpus.layout.id} is missing ${char}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('includes compound and shifted symbols in generated corpora', () => {
+    const spanishCorpus = getLayoutCorpus('es-latam-qwerty');
+    const polishCorpus = getLayoutCorpus('pl-pl-programmers');
+    const englishCorpus = getLayoutCorpus('en-us-qwerty');
+
+    for (const char of 'áéíóúüñ') {
+      expect(spanishCorpus.chars, `Spanish corpus is missing ${char}`).toContain(char);
+    }
+
+    for (const char of 'ąćęłńóśźż') {
+      expect(polishCorpus.chars, `Polish corpus is missing ${char}`).toContain(char);
+    }
+
+    expect(englishCorpus.chars).toContain('A');
   });
 
   it('checks representative keys for new layout packs', () => {
