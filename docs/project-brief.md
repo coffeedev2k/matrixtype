@@ -14,7 +14,7 @@ The app has exactly three screens:
 
 - Welcome: explains what the learner must do and how finger numbering works.
 - Trainer: shows the current command, target text, typed text, active hand/finger, active-time statistics, common errors, and practical training rules.
-- Settings: lets the learner edit custom training text, choose visual theme, and change preferences.
+- Settings: lets the learner edit custom training text, choose the day/night theme, and change preferences.
 
 ## Languages And Layouts
 

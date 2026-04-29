@@ -32,6 +32,26 @@ describe('app UI', () => {
     expect(document.body.textContent).toContain('Не смотрите на клавиатуру.');
   });
 
+  it('stores and applies the day/night theme setting', async () => {
+    await bootApp('en-US');
+
+    clickButton('Custom text');
+
+    const themeSelect = document.querySelector<HTMLSelectElement>('#visual-theme');
+    expect(themeSelect).toBeTruthy();
+    expect(Array.from(themeSelect!.options).map((option) => option.value)).toEqual(['day', 'night']);
+
+    themeSelect!.value = 'night';
+    clickButton('Save');
+
+    expect(document.querySelector('.app')?.className).toContain('app--theme-night');
+
+    const saved = JSON.parse(window.localStorage.getItem('matrixtype.preferences.v1') ?? '{}') as {
+      theme?: string;
+    };
+    expect(saved.theme).toBe('night');
+  });
+
   it('highlights the active hand palm and only the active numbered finger', async () => {
     await bootApp('ru-RU');
 

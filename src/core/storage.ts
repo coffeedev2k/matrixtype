@@ -18,7 +18,7 @@ export function loadPreferences(defaultSelection: TrainingSelection): StoredPref
     selection: defaultSelection,
     customTexts: {},
     useCustomTextByLayout: {},
-    theme: 'matrix',
+    theme: 'day',
     stats: { ...emptyStats }
   };
 
@@ -64,7 +64,11 @@ export function loadPreferences(defaultSelection: TrainingSelection): StoredPref
 }
 
 function parseTheme(value: unknown): VisualTheme {
-  return value === 'paper' ? 'paper' : 'matrix';
+  if (value === 'night' || value === 'matrix') {
+    return 'night';
+  }
+
+  return 'day';
 }
 
 function parseStats(value: unknown): TrainerStats {

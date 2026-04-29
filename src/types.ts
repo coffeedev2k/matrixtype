@@ -28,7 +28,7 @@ export type Hand = 'left' | 'right';
 
 export type FingerNumber = 1 | 2 | 3 | 4;
 
-export type VisualTheme = 'matrix' | 'paper';
+export type VisualTheme = 'day' | 'night';
 
 export type InputKind = 'direct' | 'shift' | 'altGr' | 'deadKey';
 

@@ -18,7 +18,7 @@ Done:
 - Active typing time pauses after 5 seconds without input and resumes on the next correct typed character.
 - Trainer statistics persist in `localStorage`.
 - Added a 3-hour skill target: before the target the time card is yellow, after the target it becomes blue and shows three fireworks.
-- Added tested visual themes in settings: `Matrix` and `Paper`.
+- Replaced experimental visual themes with a stable day/night theme switcher in settings.
 - Replaced demo/test training texts with original calm text variants about morning, tea, a cat-shaped cloud, breathing, and patient fingers. Texts avoid copyrighted lyrics and unsupported dead-key/AltGr characters.
 - Added simple compound input support: direct keys, Shift-derived keys, AltGr-derived keys, and dead-key-derived characters.
 - Added Spanish dead-key commands for `áéíóúÁÉÍÓÚüÜ`, and kept `ñÑ` as direct keys.

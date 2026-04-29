@@ -557,8 +557,8 @@ function renderErrorReview(errorsByChar: Record<string, number>): HTMLElement | 
 function renderThemeSelect(): HTMLSelectElement {
   const select = el('select', { className: 'field-control', id: 'visual-theme' }) as HTMLSelectElement;
   const themes: Array<{ id: VisualTheme; label: string }> = [
-    { id: 'matrix', label: extraLabel('themeMatrix') },
-    { id: 'paper', label: extraLabel('themePaper') }
+    { id: 'day', label: extraLabel('themeDay') },
+    { id: 'night', label: extraLabel('themeNight') }
   ];
 
   for (const theme of themes) {
@@ -863,8 +863,8 @@ type ExtraLabelKey =
   | 'errorReviewTitle'
   | 'spaceChar'
   | 'themeLabel'
-  | 'themeMatrix'
-  | 'themePaper';
+  | 'themeDay'
+  | 'themeNight';
 
 const extraLabels: Record<ExtraLabelKey, LocalizedText> = {
   keyboardAlt: {
@@ -1032,35 +1032,35 @@ const extraLabels: Record<ExtraLabelKey, LocalizedText> = {
     cs: 'Styl',
     sk: 'Štýl'
   },
-  themeMatrix: {
-    ru: 'Матрица',
-    en: 'Matrix',
-    es: 'Matrix',
-    pt: 'Matrix',
-    fr: 'Matrix',
-    de: 'Matrix',
-    it: 'Matrix',
-    pl: 'Matrix',
-    uk: 'Матриця',
-    tr: 'Matrix',
-    nl: 'Matrix',
-    cs: 'Matrix',
-    sk: 'Matrix'
+  themeDay: {
+    ru: 'День',
+    en: 'Day',
+    es: 'Día',
+    pt: 'Dia',
+    fr: 'Jour',
+    de: 'Tag',
+    it: 'Giorno',
+    pl: 'Dzień',
+    uk: 'День',
+    tr: 'Gündüz',
+    nl: 'Dag',
+    cs: 'Den',
+    sk: 'Deň'
   },
-  themePaper: {
-    ru: 'Бумага',
-    en: 'Paper',
-    es: 'Papel',
-    pt: 'Papel',
-    fr: 'Papier',
-    de: 'Papier',
-    it: 'Carta',
-    pl: 'Papier',
-    uk: 'Папір',
-    tr: 'Kağıt',
-    nl: 'Papier',
-    cs: 'Papír',
-    sk: 'Papier'
+  themeNight: {
+    ru: 'Ночь',
+    en: 'Night',
+    es: 'Noche',
+    pt: 'Noite',
+    fr: 'Nuit',
+    de: 'Nacht',
+    it: 'Notte',
+    pl: 'Noc',
+    uk: 'Ніч',
+    tr: 'Gece',
+    nl: 'Nacht',
+    cs: 'Noc',
+    sk: 'Noc'
   }
 };
 
@@ -1089,7 +1089,7 @@ function localeLabel(locale: AppLocale): string {
 }
 
 function parseTheme(value: string): VisualTheme {
-  return value === 'paper' ? 'paper' : 'matrix';
+  return value === 'night' ? 'night' : 'day';
 }
 
 function formatDuration(ms: number): string {
