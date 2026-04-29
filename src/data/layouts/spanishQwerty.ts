@@ -96,7 +96,7 @@ function createSpanishLayout(config: SpanishLayoutConfig): KeyboardLayout {
     label: config.label,
     note: config.note,
     inputLocale: config.inputLocale,
-    defaultText: 'la mañana es clara. el niño mira una nube y respira lento. cada tecla llega con calma.',
+    defaultText: 'la mañana clara trae te. una nube gato sonrie. los dedos respiran lento.',
     commandsByLocale: createCommandMaps(config.id, config.inputLocale, config.rows, shiftedChars)
   };
 }

@@ -6,18 +6,24 @@ describe('app UI', () => {
   it('renders the three app screens without a render crash', async () => {
     await bootApp('ru-RU');
 
-    expect(document.body.textContent).toContain('Слепая печать через телесные команды');
+    expect(document.body.textContent).toContain('Учимся слепой печати, как в Матрице');
     expect(document.body.textContent).toContain('Нумерация пальцев');
     expect(document.body.textContent).toContain('На левой руке слева направо: 4, 3, 2, 1.');
+    expect(document.querySelector('.reference-figure img')?.getAttribute('src')).toContain(
+      'keyboard-hands-reference.png'
+    );
+    expect(document.querySelector('.share-links')?.textContent).toContain('Telegram');
     expect(document.body.textContent).not.toContain('MatrixType V1');
 
     clickButton('Свой текст');
     expect(document.body.textContent).toContain('Свой тренировочный текст');
     expect(document.querySelector('.settings-form')).toBeTruthy();
+    expect(document.querySelector<HTMLSelectElement>('#visual-theme')).toBeTruthy();
 
     clickButton('Назад');
     clickButton('Начать');
     expect(document.querySelector('.command-banner')?.textContent).toContain('Произнесите команду');
+    expect(document.querySelector('.stats-grid')?.textContent).toContain('Время');
     expect(document.querySelector('.hands-guide')).toBeTruthy();
     expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain(
       'hands-from-refs-numbered-v3.svg'
@@ -83,7 +89,7 @@ describe('app UI', () => {
     layoutSelect!.dispatchEvent(new Event('change'));
 
     expect(document.body.textContent).toContain('French AZERTY France');
-    expect(document.body.textContent).toContain('la mer calme');
+    expect(document.body.textContent).toContain('un matin calme');
   });
 
   it('changes welcome copy dynamically when the interface language changes', async () => {
@@ -98,7 +104,7 @@ describe('app UI', () => {
     localeSelect!.dispatchEvent(new Event('change'));
 
     expect(document.documentElement.lang).toBe('ru');
-    expect(document.body.textContent).toContain('Слепая печать через телесные команды');
+    expect(document.body.textContent).toContain('Учимся слепой печати, как в Матрице');
     expect(document.body.textContent).not.toContain('Blind typing through body commands');
   });
 
@@ -119,6 +125,35 @@ describe('app UI', () => {
     expect(document.querySelector('.command-banner')?.textContent).toContain('with Shift');
     expect(document.querySelector('.command-banner')?.textContent).toContain('S');
     expect(document.body.textContent).not.toContain('unsupported character');
+  });
+
+  it('stores active typing stats and shows an error review', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    await bootApp('en-US');
+
+    clickButton('Custom text');
+    const textarea = document.querySelector<HTMLTextAreaElement>('.text-editor');
+    const checkbox = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    textarea!.value = 'as';
+    checkbox!.checked = true;
+    clickButton('Save');
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+    vi.setSystemTime(2500);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }));
+
+    expect(document.querySelector('.stats-grid')?.textContent).toContain('Chars1');
+    expect(document.querySelector('.error-review')?.textContent).toContain('s1');
+
+    const saved = JSON.parse(window.localStorage.getItem('matrixtype.preferences.v1') ?? '{}') as {
+      stats?: { typedChars?: number; activeMs?: number };
+    };
+
+    expect(saved.stats?.typedChars).toBe(1);
+    expect(saved.stats?.activeMs).toBe(0);
+
+    vi.useRealTimers();
   });
 });
 

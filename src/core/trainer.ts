@@ -7,6 +7,7 @@ export interface TrainerState {
   cursor: number;
   typedText: string;
   errorCount: number;
+  errorsByChar: Record<string, number>;
 }
 
 export interface CurrentCue {
@@ -33,7 +34,8 @@ export function createTrainerState(targetText: string): TrainerState {
     targetText,
     cursor: 0,
     typedText: '',
-    errorCount: 0
+    errorCount: 0,
+    errorsByChar: {}
   };
 }
 
@@ -72,10 +74,13 @@ export function applyInput(
   const cue = getCurrentCue(state, commandMap);
 
   if (!cue?.supported) {
+    const char = cue?.char ?? '';
+
     return {
       state: {
         ...state,
-        errorCount: state.errorCount + 1
+        errorCount: state.errorCount + 1,
+        errorsByChar: addCharError(state.errorsByChar, char)
       },
       outcome: 'incorrect'
     };
@@ -85,7 +90,8 @@ export function applyInput(
     return {
       state: {
         ...state,
-        errorCount: state.errorCount + 1
+        errorCount: state.errorCount + 1,
+        errorsByChar: addCharError(state.errorsByChar, cue.char)
       },
       outcome: 'incorrect'
     };
@@ -106,4 +112,11 @@ export function applyInput(
 
 function isPrintableInput(input: string): boolean {
   return input.length === 1;
+}
+
+function addCharError(errorsByChar: Record<string, number>, char: string): Record<string, number> {
+  return {
+    ...errorsByChar,
+    [char]: (errorsByChar[char] ?? 0) + 1
+  };
 }

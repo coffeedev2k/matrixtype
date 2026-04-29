@@ -13,8 +13,8 @@ The method prioritizes accuracy over speed. The learner should move slowly, say 
 The app has exactly three screens:
 
 - Welcome: explains what the learner must do and how finger numbering works.
-- Trainer: shows the current command, target text, typed text, active hand/finger, and practical training rules.
-- Settings: lets the learner edit custom training text and preferences.
+- Trainer: shows the current command, target text, typed text, active hand/finger, active-time statistics, common errors, and practical training rules.
+- Settings: lets the learner edit custom training text, choose visual theme, and change preferences.
 
 ## Languages And Layouts
 
@@ -42,6 +42,12 @@ Finger numbers follow the original method and should not be replaced with names 
 - Right hand visual order from left to right is `1, 2, 3, 4`.
 
 The SVG hands should show both hands as outlines, fill the active hand palm, and fill only the active numbered finger.
+
+## Practice Statistics
+
+The trainer stores browser-local progress only. It tracks active typing time, typed characters, typed words, and word speed. Active time pauses when more than 5 seconds pass without input, and resumes after the next correct typed character.
+
+The current skill target is 3 hours of active typing time. When the target is reached, the trainer changes the active-time card from yellow to blue and shows three fireworks.
 
 ## Testing And Done
 

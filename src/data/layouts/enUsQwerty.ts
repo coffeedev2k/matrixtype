@@ -62,6 +62,6 @@ export const enUsQwertyLayout: KeyboardLayout = {
     es: 'Teclado inglés con comandos en el idioma de la interfaz.'
   },
   inputLocale,
-  defaultText: 'a s d f j k l. hands learn the keys. say the command and press.',
+  defaultText: 'warm morning tea waits. a cloud cat smiles. fingers breathe slowly.',
   commandsByLocale: createCommandMaps('en-us-qwerty', inputLocale, commandRows, shiftedChars)
 };

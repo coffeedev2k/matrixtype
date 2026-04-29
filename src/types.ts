@@ -28,6 +28,8 @@ export type Hand = 'left' | 'right';
 
 export type FingerNumber = 1 | 2 | 3 | 4;
 
+export type VisualTheme = 'matrix' | 'paper';
+
 export interface KeyCommand {
   spokenCommand: string;
   hand?: Hand;
@@ -70,4 +72,13 @@ export interface StoredPreferences {
   selection: TrainingSelection;
   customTexts: Partial<Record<KeyboardLayoutId, string>>;
   useCustomTextByLayout: Partial<Record<KeyboardLayoutId, boolean>>;
+  theme: VisualTheme;
+  stats: TrainerStats;
+}
+
+export interface TrainerStats {
+  activeMs: number;
+  typedChars: number;
+  typedWords: number;
+  lastInputAt: number | null;
 }

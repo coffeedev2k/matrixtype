@@ -16,7 +16,7 @@ export const ptBrAbnt2Layout = createDirectKeyLayout({
     en: 'Brazilian Portuguese ABNT2 layout. V1: direct letters and Shift; accents through dead keys later.',
     es: 'Distribución portuguesa de Brasil ABNT2. V1: letras directas y Shift; acentos con teclas muertas después.'
   },
-  defaultText: 'o sol claro guia cada dedo devagar',
+  defaultText: 'a manha calma tem cha e uma nuvem gato dedos respiram devagar',
   rows: ['qwertyuiop', 'asdfghjklç', 'zxcvbnm']
 });
 
@@ -33,7 +33,7 @@ export const ptPtQwertyLayout = createDirectKeyLayout({
     en: 'Portugal Portuguese layout. V1: direct letters and Shift; accents through dead keys later.',
     es: 'Distribución portuguesa de Portugal. V1: letras directas y Shift; acentos con teclas muertas después.'
   },
-  defaultText: 'o dia claro guia cada dedo devagar',
+  defaultText: 'a manha calma tem cha e uma nuvem gato dedos respiram devagar',
   rows: ['qwertyuiop', 'asdfghjklç', 'zxcvbnm']
 });
 
@@ -50,7 +50,7 @@ export const frFrAzertyLayout = createDirectKeyLayout({
     en: 'French AZERTY layout. V1: direct letters and Shift; accents and special symbols later.',
     es: 'Distribución francesa AZERTY. V1: letras directas y Shift; acentos y signos especiales después.'
   },
-  defaultText: 'la mer calme le matin danse avec le vent',
+  defaultText: 'un matin calme avec du the un nuage chat les doigts respirent',
   rows: ['azertyuiop', 'qsdfghjklm', 'wxcvbn']
 });
 
@@ -67,7 +67,7 @@ export const deDeQwertzLayout = createDirectKeyLayout({
     en: 'German QWERTZ layout. V1: direct letters, umlauts, and Shift; AltGr symbols later.',
     es: 'Distribución alemana QWERTZ. V1: letras directas, umlauts y Shift; símbolos AltGr después.'
   },
-  defaultText: 'der tag ist klar und jede taste lernt ruhig',
+  defaultText: 'ein klarer morgen tee wartet eine katzenwolke finger atmen ruhig',
   rows: ['qwertzuiopü', 'asdfghjklöä', 'yxcvbnm']
 });
 
@@ -84,7 +84,7 @@ export const itItQwertyLayout = createDirectKeyLayout({
     en: 'Italian layout. V1: direct letters and Shift; accents later.',
     es: 'Distribución italiana. V1: letras directas y Shift; acentos después.'
   },
-  defaultText: 'il sole calmo porta luce e mani lente',
+  defaultText: 'un mattino calmo il te aspetta una nube gatto dita respirano piano',
   rows: qwertyRows
 });
 
@@ -101,7 +101,7 @@ export const plPlProgrammersLayout = createDirectKeyLayout({
     en: 'Polish Programmers layout. V1: direct letters and Shift; Polish signs through AltGr later.',
     es: 'Distribución polaca de programadores. V1: letras directas y Shift; signos polacos con AltGr después.'
   },
-  defaultText: 'polski tekst prosty ma spokojny rytm',
+  defaultText: 'cieply ranek herbata czeka chmura kot palce oddychaja spokojnie',
   rows: qwertyRows
 });
 
@@ -118,7 +118,7 @@ export const ukUaJcukenLayout = createDirectKeyLayout({
     en: 'Ukrainian standard layout. V1: direct letters and Shift; apostrophe and ґ variants later.',
     es: 'Distribución ucraniana estándar. V1: letras directas y Shift; apóstrofo y variantes de ґ después.'
   },
-  defaultText: 'мова і руки тихо вчать нові клавіші',
+  defaultText: 'тихий ранок чай чекає хмара кіт пальці дихають спокійно',
   rows: ['йцукенгшщзхї', 'фівапролджє', 'ячсмитьбю'],
   extraRows: {
     ґ: ['левой, 4-м, высоко вверх влево', 'left, 4th, high up left', 'left', 4, 'высоко вверх влево', 'high up left']
@@ -138,7 +138,7 @@ export const trTrQwertyLayout = createDirectKeyLayout({
     en: 'Turkish QWERTY-based layout. V1: direct Turkish letters and Shift.',
     es: 'Distribución turca basada en QWERTY. V1: letras turcas directas y Shift.'
   },
-  defaultText: 'sakin bir gun eller yavas yazar',
+  defaultText: 'sakin sabah cay bekler kedi bulutu parmaklar yavas nefes alir',
   rows: ['qwertyuıopğü', 'asdfghjklşi', 'zxcvbnmöç']
 });
 
@@ -155,7 +155,7 @@ export const trTrFLayout = createDirectKeyLayout({
     en: 'Turkish F layout. V1: direct Turkish letters and Shift.',
     es: 'Distribución turca F. V1: letras turcas directas y Shift.'
   },
-  defaultText: 'sakin bir gun eller yavas yazar',
+  defaultText: 'sakin sabah cay bekler kedi bulutu parmaklar yavas nefes alir',
   rows: ['fgğıodrnhpqw', 'uieaütkmlyşx', 'jövcçzsb']
 });
 
@@ -172,7 +172,7 @@ export const nlUsIntlLayout = createDirectKeyLayout({
     en: 'Dutch starts with US-International. V1: direct letters and Shift; dead keys later.',
     es: 'Para neerlandés empezamos con US-International. V1: letras directas y Shift; teclas muertas después.'
   },
-  defaultText: 'een rustige dag leert handen kalm typen',
+  defaultText: 'een rustige morgen thee wacht een kattenwolk vingers ademen kalm',
   rows: qwertyRows
 });
 
@@ -189,7 +189,7 @@ export const csCzQwertzLayout = createDirectKeyLayout({
     en: 'Czech QWERTZ layout. V1: direct letters and Shift; diacritics through upper row/dead keys later.',
     es: 'Distribución checa QWERTZ. V1: letras directas y Shift; diacríticos después.'
   },
-  defaultText: 'cesky text klidne vede prsty po klavesach',
+  defaultText: 'klidne rano caj ceka mrak kocka prsty dychaji pomalu',
   rows: qwertzRows
 });
 
@@ -206,6 +206,6 @@ export const skSkQwertzLayout = createDirectKeyLayout({
     en: 'Slovak QWERTZ layout. V1: direct letters and Shift; diacritics through upper row/dead keys later.',
     es: 'Distribución eslovaca QWERTZ. V1: letras directas y Shift; diacríticos después.'
   },
-  defaultText: 'slovensky text pokojne vedie prsty po klavesoch',
+  defaultText: 'pokojne rano caj caka oblak macka prsty dychaju pomaly',
   rows: qwertzRows
 });

@@ -1,6 +1,12 @@
-import type { StoredPreferences, TrainingSelection } from '../types';
+import type { StoredPreferences, TrainerStats, TrainingSelection, VisualTheme } from '../types';
 
 const STORAGE_KEY = 'matrixtype.preferences.v1';
+const emptyStats: TrainerStats = {
+  activeMs: 0,
+  typedChars: 0,
+  typedWords: 0,
+  lastInputAt: null
+};
 
 type LegacyStoredPreferences = Partial<StoredPreferences> & {
   customText?: unknown;
@@ -11,7 +17,9 @@ export function loadPreferences(defaultSelection: TrainingSelection): StoredPref
   const fallback: StoredPreferences = {
     selection: defaultSelection,
     customTexts: {},
-    useCustomTextByLayout: {}
+    useCustomTextByLayout: {},
+    theme: 'matrix',
+    stats: { ...emptyStats }
   };
 
   try {
@@ -36,7 +44,9 @@ export function loadPreferences(defaultSelection: TrainingSelection): StoredPref
         ...parsed.selection
       },
       customTexts,
-      useCustomTextByLayout
+      useCustomTextByLayout,
+      theme: parseTheme(parsed.theme),
+      stats: parseStats(parsed.stats)
     };
 
     if (typeof parsed.customText === 'string') {
@@ -51,6 +61,23 @@ export function loadPreferences(defaultSelection: TrainingSelection): StoredPref
   } catch {
     return fallback;
   }
+}
+
+function parseTheme(value: unknown): VisualTheme {
+  return value === 'paper' ? 'paper' : 'matrix';
+}
+
+function parseStats(value: unknown): TrainerStats {
+  if (!isRecord(value)) {
+    return { ...emptyStats };
+  }
+
+  return {
+    activeMs: typeof value.activeMs === 'number' ? Math.max(0, value.activeMs) : 0,
+    typedChars: typeof value.typedChars === 'number' ? Math.max(0, value.typedChars) : 0,
+    typedWords: typeof value.typedWords === 'number' ? Math.max(0, value.typedWords) : 0,
+    lastInputAt: typeof value.lastInputAt === 'number' ? value.lastInputAt : null
+  };
 }
 
 export function savePreferences(preferences: StoredPreferences): void {
