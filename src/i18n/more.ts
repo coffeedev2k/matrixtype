@@ -32,6 +32,9 @@ interface CopySeed {
   settingsEyebrow: string;
   settingsTitle: string;
   settingsLead: string;
+  supportTitle?: string;
+  supportText?: string;
+  supportAction?: string;
   useCustomText: string;
   textLabel: string;
   save: string;
@@ -430,5 +433,10 @@ export const skCopy = createCopy({
 });
 
 function createCopy(seed: CopySeed): AppCopy {
-  return seed;
+  return {
+    supportTitle: 'Support MatrixType',
+    supportText: 'MatrixType is free and open. If it helps you learn, you can send a coffee and support development.',
+    supportAction: 'Send a coffee',
+    ...seed
+  };
 }

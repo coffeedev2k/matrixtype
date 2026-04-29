@@ -50,6 +50,9 @@ export const ruCopy: AppCopy = {
   settingsTitle: 'Свой тренировочный текст',
   settingsLead:
     'Пользовательский текст сохраняет регистр. Символы без команд будут отмечены прямо в тренажере.',
+  supportTitle: 'Поддержать MatrixType',
+  supportText: 'MatrixType бесплатный и открытый. Если тренажер помог, можно отправить кофе и поддержать разработку.',
+  supportAction: 'Отправить кофе',
   useCustomText: 'Печатать пользовательский текст',
   textLabel: 'Текст',
   save: 'Сохранить',

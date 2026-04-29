@@ -32,6 +32,7 @@ type Screen = 'welcome' | 'trainer' | 'settings';
 
 const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands-numbered-v3.svg`;
 const keyboardAsset = `${import.meta.env.BASE_URL}assets/keyboard.png`;
+const supportUrl = 'https://ko-fi.com/coffeedev2k';
 const activeInputPauseMs = 5000;
 const skillTargetMs = 3 * 60 * 60 * 1000;
 const handGuideFingerLabels: Record<Hand, Record<FingerNumber, { x: number; y: number }>> = {
@@ -345,8 +346,27 @@ function renderSettings(copy: AppCopy): HTMLElement {
         el('label', { className: 'field' }, el('span', { className: 'field-label' }, extraLabel('themeLabel')), themeSelect),
         el('label', { className: 'toggle-field' }, useCustom, el('span', {}, copy.useCustomText)),
         el('label', { className: 'field' }, el('span', { className: 'field-label' }, copy.textLabel), textarea),
+        renderSupportBlock(copy),
         el('div', { className: 'action-row' }, saveButton, resetButton, backButton)
       )
+    )
+  );
+}
+
+function renderSupportBlock(copy: AppCopy): HTMLElement {
+  return el(
+    'section',
+    { className: 'support-block', ariaLabel: copy.supportTitle },
+    el('div', {}, el('h2', {}, copy.supportTitle), el('p', {}, copy.supportText)),
+    el(
+      'a',
+      {
+        className: 'support-link',
+        href: supportUrl,
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      },
+      copy.supportAction
     )
   );
 }

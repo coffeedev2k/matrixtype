@@ -30,6 +30,9 @@ export interface AppCopy {
   settingsEyebrow: string;
   settingsTitle: string;
   settingsLead: string;
+  supportTitle: string;
+  supportText: string;
+  supportAction: string;
   useCustomText: string;
   textLabel: string;
   save: string;

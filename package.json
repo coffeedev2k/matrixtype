@@ -9,6 +9,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "preview:local": "bash scripts/preview.sh",
+    "check:pages": "bash scripts/check-pages.sh",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run test && npm run build"

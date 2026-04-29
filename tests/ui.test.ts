@@ -18,6 +18,7 @@ describe('app UI', () => {
     expect(document.body.textContent).toContain('Свой тренировочный текст');
     expect(document.querySelector('.settings-form')).toBeTruthy();
     expect(document.querySelector<HTMLSelectElement>('#visual-theme')).toBeTruthy();
+    expect(document.querySelector<HTMLAnchorElement>('.support-link')?.href).toBe('https://ko-fi.com/coffeedev2k');
 
     clickButton('Назад');
     clickButton('Начать');

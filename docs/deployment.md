@@ -19,3 +19,9 @@ curl -L https://coffeedev2k.github.io/matrixtype/ | grep 'src/main.ts'
 ```
 
 The production page must not reference `/src/main.ts`. If it does, GitHub Pages is serving the repository root instead of the Vite `dist/` artifact. Switch repository Settings -> Pages -> Build and deployment -> Source to GitHub Actions, then rerun the workflow.
+
+You can run the same check as a script:
+
+```bash
+npm run check:pages
+```
