@@ -106,7 +106,9 @@ function renderWelcome(copy: AppCopy): HTMLElement {
         { className: 'intro-copy' },
         el('h1', {}, copy.welcomeTitle),
         el('p', { className: 'lead' }, copy.welcomeLead),
-        el('div', { className: 'notice-list' }, renderNotice(copy.architectureNote))
+        el('div', { className: 'notice-list' }, renderNotice(copy.architectureNote)),
+        renderInfoList(copy.methodStepsTitle, copy.methodSteps),
+        renderInfoList(copy.fingerRulesTitle, copy.fingerRules)
       ),
       el(
         'aside',
@@ -199,6 +201,7 @@ function renderTrainer(copy: AppCopy): HTMLElement {
           : el('span', { className: 'cue-char' }, cue?.char === ' ' ? copy.space : cue?.char ?? ''),
         !complete && cue && !cue.supported ? renderNotice(copy.unsupportedHint, 'warning') : null,
         renderNotice(copy.trainerHint),
+        renderInfoList(copy.trainerRulesTitle, copy.trainerRules, 'compact'),
         el('div', { className: 'action-column' }, settingsButton, restartButton, homeButton)
       )
     )
@@ -361,6 +364,15 @@ function renderTextSpans(): HTMLElement[] {
   });
 }
 
+function renderInfoList(title: string, items: string[], density: 'normal' | 'compact' = 'normal'): HTMLElement {
+  return el(
+    'section',
+    { className: density === 'compact' ? 'info-block info-block--compact' : 'info-block' },
+    el('h2', {}, title),
+    el('ul', {}, ...items.map((item) => el('li', {}, item)))
+  );
+}
+
 function renderHands(command: KeyCommand | null): SVGSVGElement {
   const activeHand = command?.hand;
   const activeFinger = command?.fingerNumber;
@@ -369,12 +381,12 @@ function renderHands(command: KeyCommand | null): SVGSVGElement {
     'svg',
     {
       class: 'hands-guide',
-      viewBox: '0 0 760 230',
+      viewBox: '0 0 760 250',
       role: 'img',
       'aria-label': 'hand guide'
     },
-    renderHand('left', 70, activeHand, activeFinger),
-    renderHand('right', 430, activeHand, activeFinger)
+    renderHand('left', 42, activeHand, activeFinger),
+    renderHand('right', 424, activeHand, activeFinger)
   );
 }
 
@@ -384,31 +396,94 @@ function renderHand(
   activeHand: 'left' | 'right' | undefined,
   activeFinger: 1 | 2 | 3 | 4 | undefined
 ): SVGGElement {
-  const isRight = hand === 'right';
-  const fingerXs = isRight ? [118, 82, 46, 10] : [10, 46, 82, 118];
-  const fingerHeights = [116, 132, 120, 96];
+  const activePalm = activeHand === hand;
+  const fingers =
+    hand === 'left'
+      ? [
+          { number: 4, points: fingerPoints(22, 118, 60, 34, 92, 127), color: 'orange' },
+          { number: 3, points: fingerPoints(80, 120, 94, 8, 118, 120), color: 'blue' },
+          { number: 2, points: fingerPoints(134, 122, 180, 22, 194, 132), color: 'pink' },
+          { number: 1, points: thumbPoints('left'), color: 'white' }
+        ]
+      : [
+          { number: 1, points: thumbPoints('right'), color: 'white' },
+          { number: 2, points: fingerPoints(36, 132, 50, 22, 94, 122), color: 'yellow' },
+          { number: 3, points: fingerPoints(112, 120, 126, 8, 150, 120), color: 'green' },
+          { number: 4, points: fingerPoints(176, 127, 208, 34, 246, 118), color: 'orange' }
+        ];
+  const palmPath =
+    hand === 'left'
+      ? 'M42 124 C58 111 83 106 111 108 C134 110 153 117 168 130 L167 151 C180 150 191 140 204 129 L226 151 C203 174 186 205 190 232 L46 232 C35 204 29 174 33 145 C35 136 38 129 42 124 Z'
+      : 'M206 124 C190 111 165 106 137 108 C114 110 95 117 80 130 L81 151 C68 150 57 140 44 129 L22 151 C45 174 62 205 58 232 L202 232 C213 204 219 174 215 145 C213 136 210 129 206 124 Z';
 
   return svgEl(
     'g',
-    { class: 'hand', transform: `translate(${x}, 28)` },
+    { class: 'hand', 'data-hand': hand, transform: `translate(${x}, 10)` },
+    ...fingers.map((finger) => {
+      const active = activeHand === hand && activeFinger === finger.number;
+      return svgEl(
+        'g',
+        {
+          class: active ? 'hand__digit hand__digit--active' : 'hand__digit',
+          'data-finger-number': String(finger.number)
+        },
+        svgEl('path', {
+          class: `hand__finger hand__finger--${finger.color}${active ? ' hand__finger--active' : ''}`,
+          d: finger.points.path
+        }),
+        svgEl(
+          'text',
+          {
+            class: active ? 'hand__number hand__number--active' : 'hand__number',
+            x: finger.points.labelX,
+            y: finger.points.labelY,
+            'text-anchor': 'middle'
+          },
+          String(finger.number)
+        )
+      );
+    }),
     svgEl('path', {
-      class: 'hand__palm',
-      d: 'M48 116 L176 116 Q202 118 208 146 L218 190 L34 190 L42 146 Q46 128 48 116 Z'
-    }),
-    ...fingerXs.map((fingerX, index) => {
-      const fingerNumber = (index + 1) as 1 | 2 | 3 | 4;
-      const active = activeHand === hand && activeFinger === fingerNumber;
-      return svgEl('rect', {
-        class: active ? 'hand__finger hand__finger--active' : 'hand__finger',
-        x: fingerX,
-        y: 116 - fingerHeights[index],
-        width: 32,
-        height: fingerHeights[index] + 18,
-        rx: 16
-      });
-    }),
-    svgEl('text', { class: 'hand__label', x: 114, y: 220, 'text-anchor': 'middle' }, hand === 'left' ? 'L' : 'R')
+      class: activePalm ? 'hand__palm hand__palm--active' : 'hand__palm',
+      d: palmPath
+    })
   );
+}
+
+interface FingerShape {
+  path: string;
+  labelX: number;
+  labelY: number;
+}
+
+function fingerPoints(baseLeftX: number, baseLeftY: number, tipX: number, tipY: number, baseRightX: number, baseRightY: number): FingerShape {
+  return {
+    path: [
+      `M${baseLeftX} ${baseLeftY}`,
+      `L${tipX - 15} ${tipY + 7}`,
+      `Q${tipX} ${tipY - 10} ${tipX + 15} ${tipY + 7}`,
+      `L${baseRightX} ${baseRightY}`,
+      'Z'
+    ].join(' '),
+    labelX: tipX,
+    labelY: tipY + 16
+  };
+}
+
+function thumbPoints(hand: 'left' | 'right'): FingerShape {
+  if (hand === 'left') {
+    return {
+      path: 'M154 137 C180 129 203 116 225 101 L247 124 C219 143 201 162 181 179 C166 169 157 155 154 137 Z',
+      labelX: 220,
+      labelY: 132
+    };
+  }
+
+  return {
+    path: 'M94 137 C68 129 45 116 23 101 L1 124 C29 143 47 162 67 179 C82 169 91 155 94 137 Z',
+    labelX: 28,
+    labelY: 132
+  };
 }
 
 function renderNotice(message: string, tone: 'info' | 'warning' = 'info'): HTMLElement {
@@ -472,10 +547,40 @@ function getCopy(appState: AppState): AppCopy {
 }
 
 function createDefaultSelection(config: TrainerConfig): TrainingSelection {
+  const appLocale = detectPreferredAppLocale(config);
+
   return {
-    appLocale: config.defaultAppLocale,
-    keyboardLayout: config.defaultKeyboardLayout
+    appLocale,
+    keyboardLayout: getDefaultKeyboardLayoutForLocale(config, appLocale)
   };
+}
+
+function detectPreferredAppLocale(config: TrainerConfig): AppLocale {
+  const supportedLocales = Object.keys(appCopy) as AppLocale[];
+  const browserLocales = [navigator.language, ...Array.from(navigator.languages ?? [])];
+
+  for (const browserLocale of browserLocales) {
+    const language = browserLocale.split('-')[0];
+    const supportedLocale = supportedLocales.find((locale) => locale === language);
+
+    if (supportedLocale) {
+      return supportedLocale;
+    }
+  }
+
+  return config.defaultAppLocale;
+}
+
+function getDefaultKeyboardLayoutForLocale(config: TrainerConfig, appLocale: AppLocale): KeyboardLayoutId {
+  if (appLocale === 'en') {
+    return 'en-us-qwerty';
+  }
+
+  if (appLocale === 'ru') {
+    return 'ru-qwerty';
+  }
+
+  return config.defaultKeyboardLayout;
 }
 
 function sanitizeSelection(config: TrainerConfig, selection: TrainingSelection): TrainingSelection {

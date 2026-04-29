@@ -2,6 +2,8 @@
 
 The app is a static Vite + TypeScript site.
 
+The UI has exactly three screens: Welcome, Trainer, Settings.
+
 Core concepts are intentionally separate:
 
 - `appLocale`: interface language.

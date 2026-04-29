@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: local
+    hooks:
+      - id: matrixtype-check
+        name: MatrixType TypeScript tests and build
+        entry: npm run check
+        language: system
+        pass_filenames: false
+        files: "^(src|tests|docs|scripts|\\.github|package\\.json|package-lock\\.json|tsconfig\\.json|vite\\.config\\.ts|README\\.md|AGENTS\\.md)"

@@ -4,6 +4,8 @@ MatrixType is a static browser trainer for blind ten-finger typing. V1 supports 
 
 The public repository contains the app engine, open Russian and English keyboard command data, schemas, and build setup.
 
+Start with [docs/project-brief.md](docs/project-brief.md) for the product method, screen model, finger numbering, and testing protocol.
+
 ## Development
 
 ```bash
@@ -28,8 +30,19 @@ To check the production build locally:
 ## Checks
 
 ```bash
-npm run test
-npm run build
+npm run check
+```
+
+Preferred local gate:
+
+```bash
+pre-commit run --all-files
+```
+
+Install the git hook with:
+
+```bash
+pre-commit install
 ```
 
 ## Future Layout Packs

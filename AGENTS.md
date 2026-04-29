@@ -7,11 +7,28 @@ We build software with AI agents as primary implementers.
 Before making product or architecture changes, read the repository context:
 
 - [README.md](README.md)
+- [Project Brief](docs/project-brief.md)
 - [Product Vision](docs/product.md)
 - [Learning Flow](docs/learning-flow.md)
 - [Architecture](docs/architecture.md)
 - [Deployment Plan](docs/deployment.md)
 - [Database Layout](docs/database.md)
+- [Development Protocol](docs/development.md)
+- [Roadmap](docs/roadmap.md)
+- [Raster To SVG Research](docs/vectorization-research.md)
+
+## MatrixType Project Rules
+
+- The app has exactly three screens: Welcome, Trainer, Settings.
+- Interface language and keyboard layout are independent.
+- Spoken commands follow the interface language.
+- Keyboard layouts live in layout packs under `src/data/layouts/`.
+- Do not introduce new method concepts without explicit agreement.
+- Finger numbering follows the source method: thumb is not counted; the next finger is `1`, then `2`, `3`, `4`.
+- Left hand visual order from left to right is `4, 3, 2, 1`.
+- Right hand visual order from left to right is `1, 2, 3, 4`.
+- The trainer must emphasize accuracy over speed: slow, correct practice first; speed comes later.
+- After code changes, run `pre-commit run --all-files` when available. If pre-commit is unavailable, run `npm run check`.
 
 ## Core
 

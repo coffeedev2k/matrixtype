@@ -2,6 +2,10 @@ export interface AppCopy {
   welcomeTitle: string;
   welcomeLead: string;
   architectureNote: string;
+  methodStepsTitle: string;
+  methodSteps: string[];
+  fingerRulesTitle: string;
+  fingerRules: string[];
   interfaceLanguage: string;
   keyboardLayout: string;
   textMode: string;
@@ -18,6 +22,8 @@ export interface AppCopy {
   restart: string;
   back: string;
   trainerHint: string;
+  trainerRulesTitle: string;
+  trainerRules: string[];
   unsupportedHint: string;
   finishedTitle: string;
   finishedText: string;

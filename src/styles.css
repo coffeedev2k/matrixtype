@@ -122,6 +122,38 @@ h2 {
   color: #553816;
 }
 
+.info-block {
+  margin-top: 26px;
+}
+
+.info-block h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+}
+
+.info-block ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: #3e3c38;
+  line-height: 1.5;
+}
+
+.info-block--compact {
+  margin-top: 0;
+}
+
+.info-block--compact h2 {
+  font-size: 1rem;
+}
+
+.info-block--compact ul {
+  gap: 6px;
+  padding-left: 18px;
+  font-size: 0.94rem;
+}
+
 .start-panel,
 .cue-panel,
 .settings-form {
@@ -297,19 +329,58 @@ h2 {
 
 .hand__palm,
 .hand__finger {
-  fill: rgba(255, 255, 255, 0.52);
-  stroke: #202124;
-  stroke-width: 3;
+  stroke: #7a7d80;
+  stroke-width: 7;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.hand__palm {
+  fill: #fff;
+}
+
+.hand__palm--active {
+  fill: #d9f0e3;
+}
+
+.hand__finger--white {
+  fill: #fff;
+}
+
+.hand__finger--orange {
+  fill: #f0bd76;
+}
+
+.hand__finger--blue {
+  fill: #a9cbea;
+}
+
+.hand__finger--pink {
+  fill: #e99ec7;
+}
+
+.hand__finger--yellow {
+  fill: #efd787;
+}
+
+.hand__finger--green {
+  fill: #6fca93;
 }
 
 .hand__finger--active {
-  fill: #268d61;
+  filter: drop-shadow(0 0 0.35rem rgba(38, 141, 97, 0.65));
+  stroke: #268d61;
 }
 
-.hand__label {
-  fill: #68645d;
-  font-size: 22px;
+.hand__number {
+  fill: #202124;
+  font-size: 16px;
   font-weight: 800;
+  pointer-events: none;
+}
+
+.hand__number--active {
+  fill: #fff;
 }
 
 .cue-char {
