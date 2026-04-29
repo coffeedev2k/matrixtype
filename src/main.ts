@@ -20,6 +20,7 @@ import type {
   KeyCommand,
   KeyboardLayout,
   KeyboardLayoutId,
+  LocalizedText,
   StoredPreferences,
   TrainerConfig,
   TrainingSelection
@@ -203,7 +204,7 @@ function renderTrainer(copy: AppCopy): HTMLElement {
         el(
           'div',
           { className: 'trainer-meta' },
-          el('span', {}, layout.label[state.preferences.selection.appLocale]),
+          el('span', {}, localizedText(layout.label, state.preferences.selection.appLocale)),
           el('span', {}, `${progress}%`),
           el('span', {}, `${copy.errorCount}: ${state.trainer.errorCount}`)
         ),
@@ -320,13 +321,13 @@ function renderLocaleSelect(copy: AppCopy): HTMLElement {
           value: locale,
           selected: locale === state.preferences.selection.appLocale
         },
-        locale === 'ru' ? 'Русский' : 'English'
+        localeLabel(locale)
       )
     );
   }
 
   select.addEventListener('change', () => {
-    const appLocale = select.value === 'en' ? 'en' : 'ru';
+    const appLocale = isAppLocale(select.value) ? select.value : state.config.defaultAppLocale;
     updatePreferences({
       ...state.preferences,
       selection: sanitizeSelection(state.config, {
@@ -352,7 +353,7 @@ function renderLayoutSelect(copy: AppCopy): HTMLElement {
           value: layout.id,
           selected: layout.id === state.preferences.selection.keyboardLayout
         },
-        layout.label[appLocale]
+        localizedText(layout.label, appLocale)
       )
     );
   }
@@ -373,7 +374,7 @@ function renderLayoutSelect(copy: AppCopy): HTMLElement {
     { className: 'field' },
     el('span', { className: 'field-label' }, copy.keyboardLayout),
     select,
-    el('small', { className: 'field-help' }, getActiveLayout(state).note[appLocale])
+    el('small', { className: 'field-help' }, localizedText(getActiveLayout(state).note, appLocale))
   );
 }
 
@@ -575,19 +576,11 @@ function detectPreferredAppLocale(config: TrainerConfig): AppLocale {
 }
 
 function getDefaultKeyboardLayoutForLocale(config: TrainerConfig, appLocale: AppLocale): KeyboardLayoutId {
-  if (appLocale === 'en') {
-    return 'en-us-qwerty';
-  }
-
-  if (appLocale === 'ru') {
-    return 'ru-qwerty';
-  }
-
-  return config.defaultKeyboardLayout;
+  return config.defaultKeyboardLayoutByLocale[appLocale] ?? config.defaultKeyboardLayout;
 }
 
 function sanitizeSelection(config: TrainerConfig, selection: TrainingSelection): TrainingSelection {
-  const appLocale = selection.appLocale === 'en' ? 'en' : 'ru';
+  const appLocale = isAppLocale(selection.appLocale) ? selection.appLocale : config.defaultAppLocale;
   const layout =
     config.keyboardLayouts.find((item) => item.id === selection.keyboardLayout) ??
     config.keyboardLayouts.find((item) => item.id === config.defaultKeyboardLayout) ??
@@ -597,6 +590,34 @@ function sanitizeSelection(config: TrainerConfig, selection: TrainingSelection):
     appLocale,
     keyboardLayout: layout.id
   };
+}
+
+function isAppLocale(value: unknown): value is AppLocale {
+  return typeof value === 'string' && value in appCopy;
+}
+
+function localeLabel(locale: AppLocale): string {
+  const labels: Record<AppLocale, string> = {
+    ru: 'Русский',
+    en: 'English',
+    es: 'Español',
+    pt: 'Português',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano',
+    pl: 'Polski',
+    uk: 'Українська',
+    tr: 'Türkçe',
+    nl: 'Nederlands',
+    cs: 'Čeština',
+    sk: 'Slovenčina'
+  };
+
+  return labels[locale];
+}
+
+function localizedText(text: LocalizedText, locale: AppLocale): string {
+  return text[locale] ?? text.en;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(

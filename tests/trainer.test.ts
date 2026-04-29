@@ -9,6 +9,7 @@ import {
   normalizeTrainingText
 } from '../src/core/trainer';
 import { trainerConfig } from '../src/data/config';
+import { appLocales } from '../src/types';
 import type { KeyCommandMap } from '../src/types';
 
 const commandMap: KeyCommandMap = {
@@ -214,6 +215,130 @@ describe('trainer core', () => {
     });
   });
 
+  it('adds Spanish interface commands for existing English keyboard layouts', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'en-us-qwerty');
+    const command = layout?.commandsByLocale.es.commands.s;
+
+    expect(command).toMatchObject({
+      spokenCommand: 'izquierda, 3.º, en sitio',
+      hand: 'left',
+      fingerNumber: 3,
+      position: 'en sitio'
+    });
+  });
+
+  it('supports Latin American Spanish direct ñ key', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'es-latam-qwerty');
+    const command = layout?.commandsByLocale.es.commands['ñ'];
+
+    expect(command).toMatchObject({
+      spokenCommand: 'derecha, 4.º, en sitio',
+      hand: 'right',
+      fingerNumber: 4,
+      position: 'en sitio'
+    });
+  });
+
+  it('derives Spanish uppercase Ñ from lowercase ñ', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'es-es-qwerty');
+    const command = layout?.commandsByLocale.es.commands['Ñ'];
+
+    expect(command).toMatchObject({
+      spokenCommand: 'derecha, 4.º, en sitio, con Shift',
+      hand: 'right',
+      fingerNumber: 4,
+      position: 'en sitio',
+      baseChar: 'ñ',
+      requiresShift: true
+    });
+  });
+
+  it('keeps Spain and Latin American Spanish keyboard layouts separate', () => {
+    expect(trainerConfig.keyboardLayouts.map((layout) => layout.id)).toEqual(
+      expect.arrayContaining(['es-es-qwerty', 'es-latam-qwerty'])
+    );
+  });
+
+  it('registers all planned keyboard-first training layouts', () => {
+    expect(trainerConfig.keyboardLayouts.map((layout) => layout.id)).toEqual([
+      'ru-qwerty',
+      'en-us-qwerty',
+      'es-latam-qwerty',
+      'es-es-qwerty',
+      'pt-br-abnt2',
+      'pt-pt-qwerty',
+      'fr-fr-azerty',
+      'de-de-qwertz',
+      'it-it-qwerty',
+      'pl-pl-programmers',
+      'uk-ua-jcuken',
+      'tr-tr-qwerty',
+      'tr-tr-f',
+      'nl-us-intl',
+      'cs-cz-qwertz',
+      'sk-sk-qwertz'
+    ]);
+  });
+
+  it('keeps every registered layout complete for supported interface languages', () => {
+    for (const layout of trainerConfig.keyboardLayouts) {
+      expect(layout.defaultText.length).toBeGreaterThan(0);
+
+      for (const locale of appLocales) {
+        expect(layout.label[locale] ?? layout.label.en).toBeTruthy();
+        expect(layout.note[locale] ?? layout.note.en).toBeTruthy();
+        expect(layout.commandsByLocale[locale].commands[' ']).toBeTruthy();
+      }
+    }
+  });
+
+  it('keeps default texts limited to supported direct characters', () => {
+    for (const layout of trainerConfig.keyboardLayouts) {
+      const commandMap = layout.commandsByLocale.en.commands;
+
+      for (const char of layout.defaultText) {
+        expect(commandMap[char], `${layout.id} is missing ${char}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('checks representative keys for new layout packs', () => {
+    const cases = [
+      ['pt-br-abnt2', 'ç', 'right', 4],
+      ['pt-pt-qwerty', 'ç', 'right', 4],
+      ['fr-fr-azerty', 'a', 'left', 4],
+      ['de-de-qwertz', 'z', 'right', 1],
+      ['it-it-qwerty', 'a', 'left', 4],
+      ['pl-pl-programmers', 'a', 'left', 4],
+      ['uk-ua-jcuken', 'і', 'left', 3],
+      ['tr-tr-qwerty', 'ı', 'right', 2],
+      ['tr-tr-f', 'f', 'left', 4],
+      ['nl-us-intl', 'a', 'left', 4],
+      ['cs-cz-qwertz', 'z', 'right', 1],
+      ['sk-sk-qwertz', 'z', 'right', 1]
+    ] as const;
+
+    for (const [layoutId, char, hand, fingerNumber] of cases) {
+      const layout = trainerConfig.keyboardLayouts.find((item) => item.id === layoutId);
+      expect(layout?.commandsByLocale.en.commands[char]).toMatchObject({
+        hand,
+        fingerNumber
+      });
+    }
+  });
+
+  it('derives uppercase direct letters in new layout packs', () => {
+    const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'tr-tr-qwerty');
+    const command = layout?.commandsByLocale.en.commands['İ'];
+
+    expect(command).toMatchObject({
+      baseChar: 'i',
+      requiresShift: true,
+      hand: 'right',
+      fingerNumber: 4
+    });
+  });
+
   it('does not assign hand fields to spaces', () => {
     const layout = trainerConfig.keyboardLayouts.find((item) => item.id === 'en-us-qwerty');
     const command = layout?.commandsByLocale.en.commands[' '];
@@ -227,7 +352,10 @@ describe('trainer core', () => {
     const checkedFiles = [
       'src/types.ts',
       'src/data/layouts/ruQwerty.ts',
-      'src/data/layouts/enUsQwerty.ts'
+      'src/data/layouts/enUsQwerty.ts',
+      'src/data/layouts/spanishQwerty.ts',
+      'src/data/layouts/additionalLayouts.ts',
+      'src/data/layouts/shared.ts'
     ];
     const forbiddenTerms = ['index', 'middle', 'ring', 'pinky', 'thumb', 'both', 'home'];
     const content = checkedFiles

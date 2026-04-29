@@ -1,10 +1,9 @@
-import type { KeyboardLayout } from '../../types';
+import type { KeyboardLayout, KeyboardLayoutId } from '../../types';
 import { createCommandMaps } from './shared';
 import type { CommandTuple } from './shared';
 
-const inputLocale = 'en-US';
 const shiftedChars: Record<string, string> = Object.fromEntries(
-  'abcdefghijklmnopqrstuvwxyz'.split('').map((char) => [char.toUpperCase(), char])
+  'abcdefghijklmnñopqrstuvwxyz'.split('').map((char) => [char.toLocaleUpperCase('es-ES'), char])
 );
 
 const commandRows: Record<string, CommandTuple> = {
@@ -18,8 +17,6 @@ const commandRows: Record<string, CommandTuple> = {
   i: ['правой, 2-м, вверх', 'right, 2nd, up', 'right', 2, 'вверх', 'up'],
   o: ['правой, 3-м, вверх', 'right, 3rd, up', 'right', 3, 'вверх', 'up'],
   p: ['правой, 4-м, вверх', 'right, 4th, up', 'right', 4, 'вверх', 'up'],
-  '[': ['правой, 4-м, вверх вправо', 'right, 4th, up right', 'right', 4, 'вверх вправо', 'up right'],
-  ']': ['правой, 4-м, вверх далеко вправо', 'right, 4th, far up right', 'right', 4, 'вверх далеко вправо', 'far up right'],
 
   a: ['левой, 4-м, на месте', 'left, 4th, in place', 'left', 4, 'на месте', 'in place'],
   s: ['левой, 3-м, на месте', 'left, 3rd, in place', 'left', 3, 'на месте', 'in place'],
@@ -30,7 +27,7 @@ const commandRows: Record<string, CommandTuple> = {
   j: ['правой, 1-м, на месте', 'right, 1st, in place', 'right', 1, 'на месте', 'in place'],
   k: ['правой, 2-м, на месте', 'right, 2nd, in place', 'right', 2, 'на месте', 'in place'],
   l: ['правой, 3-м, на месте', 'right, 3rd, in place', 'right', 3, 'на месте', 'in place'],
-  ';': ['правой, 4-м, на месте', 'right, 4th, in place', 'right', 4, 'на месте', 'in place'],
+  ñ: ['правой, 4-м, на месте', 'right, 4th, in place', 'right', 4, 'на месте', 'in place'],
 
   z: ['левой, 4-м, вниз', 'left, 4th, down', 'left', 4, 'вниз', 'down'],
   x: ['левой, 3-м, вниз', 'left, 3rd, down', 'left', 3, 'вниз', 'down'],
@@ -41,27 +38,65 @@ const commandRows: Record<string, CommandTuple> = {
   m: ['правой, 1-м, вниз', 'right, 1st, down', 'right', 1, 'вниз', 'down'],
   ',': ['правой, 2-м, вниз', 'right, 2nd, down', 'right', 2, 'вниз', 'down'],
   '.': ['правой, 3-м, вниз', 'right, 3rd, down', 'right', 3, 'вниз', 'down'],
+  '-': ['правой, 4-м, вниз', 'right, 4th, down', 'right', 4, 'вниз', 'down'],
 
-  ' ': ['пробел', 'space'],
-  '-': ['правой, 4-м, высоко вверх по центру', 'right, 4th, high up center', 'right', 4, 'высоко вверх по центру', 'high up center'],
-  '"': ['правой, 4-м, вправо с шифтом', 'right, 4th, right with shift', 'right', 4, 'вправо с шифтом', 'right with shift'],
-  '(': ['правой, 3-м, высоко вверх с шифтом', 'right, 3rd, high up with shift', 'right', 3, 'высоко вверх с шифтом', 'high up with shift'],
-  ')': ['правой, 4-м, высоко вверх влево с шифтом', 'right, 4th, high up left with shift', 'right', 4, 'высоко вверх влево с шифтом', 'high up left with shift']
+  ' ': ['пробел', 'space']
 };
 
-export const enUsQwertyLayout: KeyboardLayout = {
-  id: 'en-us-qwerty',
+const spainExtraRows: Record<string, CommandTuple> = {
+  ç: ['правой, 4-м, далеко вправо', 'right, 4th, far right', 'right', 4, 'далеко вправо', 'far right']
+};
+
+export const esEsQwertyLayout = createSpanishLayout({
+  id: 'es-es-qwerty',
+  inputLocale: 'es-ES',
   label: {
-    ru: 'Английская QWERTY',
-    en: 'English QWERTY',
-    es: 'QWERTY inglesa'
+    ru: 'Испанская QWERTY Испания',
+    en: 'Spanish QWERTY Spain',
+    es: 'QWERTY española España'
   },
   note: {
-    ru: 'Английская клавиатура с командами на языке интерфейса.',
-    en: 'English keyboard with commands in the interface language.',
-    es: 'Teclado inglés con comandos en el idioma de la interfaz.'
+    ru: 'Испанская раскладка Испании. В V1 поддержаны прямые клавиши, без dead keys для ударений.',
+    en: 'Spanish Spain layout. V1 supports direct keys, without dead keys for accents.',
+    es: 'Distribución española de España. V1 admite teclas directas, sin teclas muertas para acentos.'
   },
-  inputLocale,
-  defaultText: 'a s d f j k l. hands learn the keys. say the command and press.',
-  commandsByLocale: createCommandMaps('en-us-qwerty', inputLocale, commandRows, shiftedChars)
-};
+  rows: {
+    ...commandRows,
+    ...spainExtraRows
+  }
+});
+
+export const esLatamQwertyLayout = createSpanishLayout({
+  id: 'es-latam-qwerty',
+  inputLocale: 'es-MX',
+  label: {
+    ru: 'Испанская QWERTY Латинская Америка',
+    en: 'Spanish QWERTY Latin America',
+    es: 'QWERTY española Latinoamérica'
+  },
+  note: {
+    ru: 'Латиноамериканская испанская раскладка. В V1 поддержаны прямые клавиши, без dead keys для ударений.',
+    en: 'Latin American Spanish layout. V1 supports direct keys, without dead keys for accents.',
+    es: 'Distribución española latinoamericana. V1 admite teclas directas, sin teclas muertas para acentos.'
+  },
+  rows: commandRows
+});
+
+interface SpanishLayoutConfig {
+  id: KeyboardLayoutId;
+  inputLocale: string;
+  label: KeyboardLayout['label'];
+  note: KeyboardLayout['note'];
+  rows: Record<string, CommandTuple>;
+}
+
+function createSpanishLayout(config: SpanishLayoutConfig): KeyboardLayout {
+  return {
+    id: config.id,
+    label: config.label,
+    note: config.note,
+    inputLocale: config.inputLocale,
+    defaultText: 'la mañana es clara. el niño mira una nube y respira lento. cada tecla llega con calma.',
+    commandsByLocale: createCommandMaps(config.id, config.inputLocale, config.rows, shiftedChars)
+  };
+}

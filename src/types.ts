@@ -1,6 +1,28 @@
-export type AppLocale = 'ru' | 'en';
+export const appLocales = ['ru', 'en', 'es', 'pt', 'fr', 'de', 'it', 'pl', 'uk', 'tr', 'nl', 'cs', 'sk'] as const;
 
-export type KeyboardLayoutId = 'ru-qwerty' | 'en-us-qwerty';
+export type AppLocale = (typeof appLocales)[number];
+
+export type CoreAppLocale = 'ru' | 'en' | 'es';
+
+export type LocalizedText = Record<CoreAppLocale, string> & Partial<Record<AppLocale, string>>;
+
+export type KeyboardLayoutId =
+  | 'ru-qwerty'
+  | 'en-us-qwerty'
+  | 'es-es-qwerty'
+  | 'es-latam-qwerty'
+  | 'pt-br-abnt2'
+  | 'pt-pt-qwerty'
+  | 'fr-fr-azerty'
+  | 'de-de-qwertz'
+  | 'it-it-qwerty'
+  | 'pl-pl-programmers'
+  | 'uk-ua-jcuken'
+  | 'tr-tr-qwerty'
+  | 'tr-tr-f'
+  | 'nl-us-intl'
+  | 'cs-cz-qwertz'
+  | 'sk-sk-qwertz';
 
 export type Hand = 'left' | 'right';
 
@@ -25,8 +47,8 @@ export interface KeyCommandMap {
 
 export interface KeyboardLayout {
   id: KeyboardLayoutId;
-  label: Record<AppLocale, string>;
-  note: Record<AppLocale, string>;
+  label: LocalizedText;
+  note: LocalizedText;
   inputLocale: string;
   defaultText: string;
   commandsByLocale: Record<AppLocale, KeyCommandMap>;
@@ -35,6 +57,7 @@ export interface KeyboardLayout {
 export interface TrainerConfig {
   defaultAppLocale: AppLocale;
   defaultKeyboardLayout: KeyboardLayoutId;
+  defaultKeyboardLayoutByLocale: Record<AppLocale, KeyboardLayoutId>;
   keyboardLayouts: KeyboardLayout[];
 }
 

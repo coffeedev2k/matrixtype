@@ -2,7 +2,7 @@
 
 MatrixType is a static browser trainer for blind ten-finger typing. V1 supports independent interface language and keyboard layout selection.
 
-The public repository contains the app engine, open Russian and English keyboard command data, schemas, and build setup.
+The public repository contains the app engine, open keyboard command data, schemas, and build setup.
 
 Start with [docs/project-brief.md](docs/project-brief.md) for the product method, screen model, finger numbering, and testing protocol.
 
@@ -45,7 +45,7 @@ Install the git hook with:
 pre-commit install
 ```
 
-## Future Layout Packs
+## Layout Packs
 
 The app separates:
 
@@ -53,6 +53,8 @@ The app separates:
 - `keyboardLayout`: concrete physical/symbol keyboard layout.
 - `keyCommandMap`: mapping from character to spoken body command for the selected interface language.
 
-The current keyboard layouts are Russian ЙЦУКЕН and English QWERTY. Planned layouts after that: Spanish, Portuguese, French, German, Italian, Polish, and Ukrainian. Japanese is not a direct next target because IME composition does not fit the V1 model of one character to one physical command.
+Current interface languages are Russian, English, Spanish, Portuguese, French, German, Italian, Polish, Ukrainian, Turkish, Dutch, Czech, and Slovak. Current training layouts cover the same language directions as direct-key packs.
+
+See [docs/language-layout-rollout.md](docs/language-layout-rollout.md) for the supported layout list and deferred dead-key/AltGr work. Japanese is not a direct next target because IME composition does not fit the V1 model of one character to one physical command.
 
 See [docs/roadmap.md](docs/roadmap.md) for the next product steps.

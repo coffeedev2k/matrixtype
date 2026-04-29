@@ -1,6 +1,6 @@
-import type { AppLocale, KeyCommand, KeyCommandMap, KeyboardLayout } from '../../types';
-
-type CommandTuple = [ru: string, en: string, hand?: 'left' | 'right', fingerNumber?: 1 | 2 | 3 | 4, ruPosition?: string, enPosition?: string];
+import type { KeyboardLayout } from '../../types';
+import { createCommandMaps } from './shared';
+import type { CommandTuple } from './shared';
 
 const inputLocale = 'ru-RU';
 const shiftedChars: Record<string, string> = Object.fromEntries(
@@ -61,70 +61,15 @@ export const ruQwertyLayout: KeyboardLayout = {
   id: 'ru-qwerty',
   label: {
     ru: 'Русская ЙЦУКЕН',
-    en: 'Russian ЙЦУКЕН'
+    en: 'Russian ЙЦУКЕН',
+    es: 'ЙЦУКЕН rusa'
   },
   note: {
     ru: 'Русская клавиатура с открытыми командами на языке интерфейса.',
-    en: 'Russian keyboard with open commands in the interface language.'
+    en: 'Russian keyboard with open commands in the interface language.',
+    es: 'Teclado ruso con comandos abiertos en el idioma de la interfaz.'
   },
   inputLocale,
   defaultText: 'а о л в. вода дала лад. рука помнит движение. произносите команду и нажимайте клавишу.',
-  commandsByLocale: {
-    ru: createCommandMap('ru'),
-    en: createCommandMap('en')
-  }
+  commandsByLocale: createCommandMaps('ru-qwerty', inputLocale, commandRows, shiftedChars)
 };
-
-function createCommandMap(appLocale: AppLocale): KeyCommandMap {
-  const commands: Record<string, KeyCommand> = {};
-
-  for (const [char, [ru, en, hand, fingerNumber, ruPosition, enPosition]] of Object.entries(commandRows)) {
-    const command: KeyCommand = {
-      spokenCommand: appLocale === 'ru' ? ru : en
-    };
-    const position = appLocale === 'ru' ? ruPosition : enPosition;
-
-    if (hand) {
-      command.hand = hand;
-    }
-
-    if (fingerNumber) {
-      command.fingerNumber = fingerNumber;
-    }
-
-    if (position) {
-      command.position = position;
-    }
-
-    commands[char] = command;
-  }
-
-  addShiftCommands(commands, appLocale);
-
-  return {
-    id: `ru-qwerty-${appLocale}`,
-    keyboardLayout: 'ru-qwerty',
-    appLocale,
-    inputLocale,
-    commands
-  };
-}
-
-function addShiftCommands(commands: Record<string, KeyCommand>, appLocale: AppLocale): void {
-  const shiftSuffix = appLocale === 'ru' ? 'с Shift' : 'with Shift';
-
-  for (const [shiftedChar, baseChar] of Object.entries(shiftedChars)) {
-    const baseCommand = commands[baseChar];
-
-    if (!baseCommand) {
-      continue;
-    }
-
-    commands[shiftedChar] = {
-      ...baseCommand,
-      spokenCommand: `${baseCommand.spokenCommand}, ${shiftSuffix}`,
-      baseChar,
-      requiresShift: true
-    };
-  }
-}

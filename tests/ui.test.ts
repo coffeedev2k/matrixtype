@@ -54,6 +54,38 @@ describe('app UI', () => {
     expect(document.body.textContent).not.toContain('Слепая печать через телесные команды');
   });
 
+  it('uses Spanish browser language and Spanish keyboard by default when supported', async () => {
+    await bootApp('es-ES');
+
+    expect(document.documentElement.lang).toBe('es');
+    expect(document.body.textContent).toContain('Mecanografía a ciegas con comandos corporales');
+    expect(document.body.textContent).toContain('QWERTY española Latinoamérica');
+  });
+
+  it('uses added browser interface languages and their default keyboards', async () => {
+    await bootApp('de-DE');
+
+    expect(document.documentElement.lang).toBe('de');
+    expect(document.body.textContent).toContain('Blindschreiben mit Körperkommandos');
+    expect(document.body.textContent).toContain('German QWERTZ Germany');
+  });
+
+  it('renders the full keyboard layout selector and switches representative layouts', async () => {
+    await bootApp('en-US');
+
+    const layoutSelect = document.querySelector<HTMLSelectElement>('#keyboard-layout');
+    expect(layoutSelect).toBeTruthy();
+    expect(Array.from(layoutSelect!.options).map((option) => option.value)).toEqual(
+      expect.arrayContaining(['pt-br-abnt2', 'fr-fr-azerty', 'de-de-qwertz', 'uk-ua-jcuken', 'tr-tr-f'])
+    );
+
+    layoutSelect!.value = 'fr-fr-azerty';
+    layoutSelect!.dispatchEvent(new Event('change'));
+
+    expect(document.body.textContent).toContain('French AZERTY France');
+    expect(document.body.textContent).toContain('la mer calme');
+  });
+
   it('changes welcome copy dynamically when the interface language changes', async () => {
     await bootApp('en-US');
 
