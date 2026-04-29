@@ -1,5 +1,5 @@
 import type { KeyboardLayout, KeyboardLayoutId } from '../../types';
-import { createCommandMaps } from './shared';
+import { createCommandMaps, createDeadKeyLetters } from './shared';
 import type { CommandTuple, DeadKeyCommandConfig } from './shared';
 
 const shiftedChars: Record<string, string> = Object.fromEntries(
@@ -103,39 +103,9 @@ function createSpanishLayout(config: SpanishLayoutConfig): KeyboardLayout {
     label: config.label,
     note: config.note,
     inputLocale: config.inputLocale,
-    defaultText: 'la mañana clara trae té. una nube gato sonríe. el pingüino respira lento.',
+    defaultText: 'la mañana clara trae té una nube gato sonríe el pingüino respira lento',
     commandsByLocale: createCommandMaps(config.id, config.inputLocale, config.rows, shiftedChars, {
       deadKeyChars
     })
   };
-}
-
-function createDeadKeyLetters(deadKeyChar: string, baseChars: string[], locale: string): DeadKeyCommandConfig[] {
-  return baseChars.flatMap((baseChar) => {
-    const char = `${baseChar}${deadKeyCombiningMark(deadKeyChar)}`.normalize('NFC');
-    const shiftedChar = char.toLocaleUpperCase(locale);
-
-    return [
-      {
-        char,
-        baseChar,
-        deadKeyChar
-      },
-      {
-        char: shiftedChar,
-        baseChar,
-        deadKeyChar,
-        requiresShift: true
-      }
-    ];
-  });
-}
-
-function deadKeyCombiningMark(deadKeyChar: string): string {
-  const marks: Record<string, string> = {
-    '´': '\u0301',
-    '¨': '\u0308'
-  };
-
-  return marks[deadKeyChar] ?? deadKeyChar;
 }

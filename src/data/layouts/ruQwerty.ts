@@ -70,6 +70,6 @@ export const ruQwertyLayout: KeyboardLayout = {
     es: 'Teclado ruso con comandos abiertos en el idioma de la interfaz.'
   },
   inputLocale,
-  defaultText: 'тихое утро. чай ждет. облако похоже на кота. пальцы дышат спокойно.',
+  defaultText: 'тихое утро чай ждет облако похоже на кота пальцы дышат спокойно',
   commandsByLocale: createCommandMaps('ru-qwerty', inputLocale, commandRows, shiftedChars)
 };

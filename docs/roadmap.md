@@ -2,13 +2,11 @@
 
 Next useful steps:
 
-- Deepen direct-key layout packs with punctuation and regional variants after checking real keyboard layouts.
 - Add lesson presets that start from the starting finger positions and gradually expand to the whole keyboard.
 - Replace the current hand asset with a version where thumbs are separate visible fields. The thumb should remain unfilled when highlighting the active palm and numbered finger.
 - Add a movement marker near the active finger: a circled cross for "in place" and path arrows for directional commands.
 - Clarify the command grammar in the trainer flow: hand means which hand moves, number means the finger counted from the thumb, and position means the movement of that target finger.
 - Design movement arrows as grid-step paths. Example: down-right is one step down and one step right; far up-left can be two repeated up-left steps. This should make the command system feel complete across the keyboard.
-- Add real compound character maps for Portuguese, Dutch, French, Czech, and Slovak using the existing dead-key/AltGr engine.
 - Add a public command-map editor for contributors, so new layouts can be reviewed without touching the trainer engine.
 
 Done:
@@ -28,6 +26,7 @@ Done:
 - Added simple compound input support: direct keys, Shift-derived keys, AltGr-derived keys, and dead-key-derived characters.
 - Added Spanish dead-key commands for `áéíóúÁÉÍÓÚüÜ`, and kept `ñÑ` as direct keys.
 - Added Polish Programmer AltGr commands for `ąćęłńóśźż` and uppercase variants.
+- Added real compound character maps for Portuguese, Dutch, French, Czech, and Slovak using the existing dead-key engine.
 - Added app-level integration tests that generate a supported symbol corpus for every layout, set it as custom text, type it through the trainer input adapter, and verify completion.
 - Replaced the manually drawn trainer hands with `public/assets/hands-numbered-v3.svg` as the base visual.
 - The trainer overlays active palm and active numbered finger highlights on top of that vector asset using only `hand + fingerNumber`.
@@ -35,4 +34,5 @@ Done:
 - The trainer desaturates the hand asset dynamically and highlights the active hand and active finger in red using asset-derived paths.
 - Added Spanish interface copy plus Spanish QWERTY Latin America and Spanish QWERTY Spain layout packs. See `docs/spanish-language-addition.md`.
 - Added keyboard-first direct-key layout packs for Portuguese, French, German, Italian, Polish, Ukrainian, Turkish, Dutch, Czech, and Slovak. See `docs/language-layout-rollout.md`.
+- Deepened direct-key layout packs with punctuation while keeping default training texts lowercase and punctuation-free.
 - Added interface-language support for Portuguese, French, German, Italian, Polish, Ukrainian, Turkish, Dutch, Czech, and Slovak.

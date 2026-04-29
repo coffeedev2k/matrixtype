@@ -355,6 +355,17 @@ describe('trainer core', () => {
     }
   });
 
+  it('keeps default texts lowercase and punctuation-free for a low-friction first run', () => {
+    const punctuation = /[.,;:!?'"()[\]{}<>/\\_-]/;
+
+    for (const layout of trainerConfig.keyboardLayouts) {
+      expect(layout.defaultText, `${layout.id} default text has punctuation`).not.toMatch(punctuation);
+      expect(layout.defaultText, `${layout.id} default text has uppercase`).toBe(
+        layout.defaultText.toLocaleLowerCase(layout.inputLocale)
+      );
+    }
+  });
+
   it('generates supported integration corpus for every layout', () => {
     for (const corpus of createAllLayoutCorpora()) {
       const commandMap = corpus.layout.commandsByLocale.en.commands;
@@ -372,6 +383,11 @@ describe('trainer core', () => {
     const spanishCorpus = getLayoutCorpus('es-latam-qwerty');
     const polishCorpus = getLayoutCorpus('pl-pl-programmers');
     const englishCorpus = getLayoutCorpus('en-us-qwerty');
+    const portugueseCorpus = getLayoutCorpus('pt-br-abnt2');
+    const dutchCorpus = getLayoutCorpus('nl-us-intl');
+    const frenchCorpus = getLayoutCorpus('fr-fr-azerty');
+    const czechCorpus = getLayoutCorpus('cs-cz-qwertz');
+    const slovakCorpus = getLayoutCorpus('sk-sk-qwertz');
 
     for (const char of 'áéíóúüñ') {
       expect(spanishCorpus.chars, `Spanish corpus is missing ${char}`).toContain(char);
@@ -381,21 +397,71 @@ describe('trainer core', () => {
       expect(polishCorpus.chars, `Polish corpus is missing ${char}`).toContain(char);
     }
 
+    for (const char of 'áâãàéêíóôõú') {
+      expect(portugueseCorpus.chars, `Portuguese corpus is missing ${char}`).toContain(char);
+    }
+
+    for (const char of 'áéíóúèëïöü') {
+      expect(dutchCorpus.chars, `Dutch corpus is missing ${char}`).toContain(char);
+    }
+
+    for (const char of 'éèçàùêëîïôûü') {
+      expect(frenchCorpus.chars, `French corpus is missing ${char}`).toContain(char);
+    }
+
+    for (const char of 'čďěňřšťžáéíóúýů') {
+      expect(czechCorpus.chars, `Czech corpus is missing ${char}`).toContain(char);
+    }
+
+    for (const char of 'čďľňŕšťžáéíĺóŕúýäô') {
+      expect(slovakCorpus.chars, `Slovak corpus is missing ${char}`).toContain(char);
+    }
+
     expect(englishCorpus.chars).toContain('A');
+  });
+
+  it('adds compound commands for Portuguese, Dutch, French, Czech, and Slovak', () => {
+    const cases = [
+      ['pt-br-abnt2', 'ã', '~', 'a', 'deadKey'],
+      ['pt-pt-qwerty', 'ê', '^', 'e', 'deadKey'],
+      ['nl-us-intl', 'ë', '¨', 'e', 'deadKey'],
+      ['fr-fr-azerty', 'ê', '^', 'e', 'deadKey'],
+      ['cs-cz-qwertz', 'č', 'ˇ', 'c', 'deadKey'],
+      ['sk-sk-qwertz', 'ľ', 'ˇ', 'l', 'deadKey']
+    ] as const;
+
+    for (const [layoutId, char, deadKeyChar, baseChar, inputKind] of cases) {
+      const layout = trainerConfig.keyboardLayouts.find((item) => item.id === layoutId);
+      const command = layout?.commandsByLocale.en.commands[char];
+
+      expect(command, `${layoutId} is missing ${char}`).toMatchObject({
+        inputKind,
+        baseChar,
+        deadKeyChar
+      });
+      expect(command?.spokenCommand).toContain('first');
+      expect(command?.spokenCommand).toContain('then');
+    }
   });
 
   it('checks representative keys for new layout packs', () => {
     const cases = [
       ['pt-br-abnt2', 'ç', 'right', 4],
       ['pt-pt-qwerty', 'ç', 'right', 4],
+      ['pt-pt-qwerty', ';', 'right', 2],
       ['fr-fr-azerty', 'a', 'left', 4],
+      ['fr-fr-azerty', ',', 'right', 2],
       ['de-de-qwertz', 'z', 'right', 1],
+      ['de-de-qwertz', ',', 'right', 2],
       ['it-it-qwerty', 'a', 'left', 4],
+      ['it-it-qwerty', '.', 'right', 3],
       ['pl-pl-programmers', 'a', 'left', 4],
       ['uk-ua-jcuken', 'і', 'left', 3],
+      ['uk-ua-jcuken', "'", 'right', 4],
       ['tr-tr-qwerty', 'ı', 'right', 2],
       ['tr-tr-f', 'f', 'left', 4],
       ['nl-us-intl', 'a', 'left', 4],
+      ['nl-us-intl', '/', 'right', 4],
       ['cs-cz-qwertz', 'z', 'right', 1],
       ['sk-sk-qwertz', 'z', 'right', 1]
     ] as const;

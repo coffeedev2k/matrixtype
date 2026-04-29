@@ -28,6 +28,16 @@ export interface DeadKeyCommandConfig {
   requiresShift?: true;
 }
 
+const deadKeyCombiningMarks: Record<string, string> = {
+  '`': '\u0300',
+  '´': '\u0301',
+  '^': '\u0302',
+  '~': '\u0303',
+  '¨': '\u0308',
+  'ˇ': '\u030c',
+  '˚': '\u030a'
+};
+
 const commandLocaleData: Record<AppLocale, CommandLocaleData> = {
   ru: {
     left: 'левой',
@@ -528,6 +538,27 @@ export function createShiftedChars(chars: string, locale: string): Record<string
   }
 
   return shifted;
+}
+
+export function createDeadKeyLetters(deadKeyChar: string, baseChars: string[], locale: string): DeadKeyCommandConfig[] {
+  return baseChars.flatMap((baseChar) => {
+    const char = `${baseChar}${deadKeyCombiningMarks[deadKeyChar] ?? deadKeyChar}`.normalize('NFC');
+    const shiftedChar = char.toLocaleUpperCase(locale);
+
+    return [
+      {
+        char,
+        baseChar,
+        deadKeyChar
+      },
+      {
+        char: shiftedChar,
+        baseChar,
+        deadKeyChar,
+        requiresShift: true
+      }
+    ];
+  });
 }
 
 function createCommandMap(
