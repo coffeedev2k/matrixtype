@@ -9,8 +9,8 @@ import {
 } from './core/trainer';
 import { clearPreferences, loadPreferences, savePreferences } from './core/storage';
 import { trainerConfig } from './data/config';
-import { handGuideAreas } from './data/handGuideAreas';
-import type { FingerHandGuideArea } from './data/handGuideAreas';
+import { handGuideAreas, handGuideFingerLabels, handGuideViewBox } from './data/handGuideAreas';
+import type { FingerHandGuideArea, ThumbHandGuideArea } from './data/handGuideAreas';
 import { appCopy } from './i18n';
 import type { AppCopy } from './i18n/types';
 import type {
@@ -30,25 +30,11 @@ import type {
 
 type Screen = 'welcome' | 'trainer' | 'settings';
 
-const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands-numbered-v3.svg`;
+const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands.svg`;
 const keyboardAsset = `${import.meta.env.BASE_URL}assets/keyboard.png`;
 const supportUrl = 'https://ko-fi.com/coffeedev2k';
 const activeInputPauseMs = 5000;
 const skillTargetMs = 3 * 60 * 60 * 1000;
-const handGuideFingerLabels: Record<Hand, Record<FingerNumber, { x: number; y: number }>> = {
-  left: {
-    1: { x: 207, y: 57 },
-    2: { x: 151, y: 35 },
-    3: { x: 94, y: 54 },
-    4: { x: 52, y: 94 }
-  },
-  right: {
-    1: { x: 369, y: 57 },
-    2: { x: 426, y: 36 },
-    3: { x: 483, y: 51 },
-    4: { x: 524, y: 95 }
-  }
-};
 
 interface AppState {
   screen: Screen;
@@ -248,7 +234,7 @@ function renderTrainer(copy: AppCopy): HTMLElement {
         renderStats(state.preferences.stats),
         el('div', { className: 'target-text', ariaLabel: copy.textLabel }, ...renderTextSpans()),
         el('div', { className: 'typed-line', ariaLabel: copy.textLabel }, state.trainer.typedText || ' '),
-        renderHands(command),
+        renderHands(command, cue?.char ?? null),
         complete
           ? el(
               'div',
@@ -649,38 +635,48 @@ function focusTrainerInput(): void {
   input?.focus({ preventScroll: true });
 }
 
-function renderHands(command: KeyCommand | null): SVGSVGElement {
+function renderHands(command: KeyCommand | null, cueChar: string | null): SVGSVGElement {
   const activeHand = command?.hand;
   const activeFinger = command?.fingerNumber;
+  const activeThumbs = cueChar === ' ';
 
   return svgEl(
     'svg',
     {
       class: 'hands-guide',
-      viewBox: '0 0 587 245',
+      viewBox: `0 0 ${handGuideViewBox.width} ${handGuideViewBox.height}`,
       role: 'img',
       'aria-label': 'hand guide'
     },
+    svgEl('rect', {
+      class: 'hands-guide__background',
+      x: '0',
+      y: '0',
+      width: String(handGuideViewBox.width),
+      height: String(handGuideViewBox.height)
+    }),
     svgEl('image', {
       class: 'hands-guide__image',
       href: handsGuideAsset,
       x: '0',
       y: '0',
-      width: '587',
-      height: '245'
+      width: String(handGuideViewBox.width),
+      height: String(handGuideViewBox.height)
     }),
-    renderHandOverlay('left', activeHand, activeFinger),
-    renderHandOverlay('right', activeHand, activeFinger)
+    renderHandOverlay('left', activeHand, activeFinger, activeThumbs),
+    renderHandOverlay('right', activeHand, activeFinger, activeThumbs)
   );
 }
 
 function renderHandOverlay(
   hand: Hand,
   activeHand: Hand | undefined,
-  activeFinger: FingerNumber | undefined
+  activeFinger: FingerNumber | undefined,
+  activeThumbs: boolean
 ): SVGGElement {
   const activePalm = activeHand === hand;
   const palm = handGuideAreas.find((area) => area.hand === hand && area.kind === 'palm');
+  const thumb = handGuideAreas.find((area): area is ThumbHandGuideArea => area.hand === hand && area.kind === 'thumb');
   const fingerOrder: FingerNumber[] = hand === 'left' ? [4, 3, 2, 1] : [1, 2, 3, 4];
   const fingers = fingerOrder.map((fingerNumber): FingerHandGuideArea => {
     const area = handGuideAreas.find(
@@ -698,6 +694,10 @@ function renderHandOverlay(
     throw new Error(`Missing ${hand} hand palm guide area`);
   }
 
+  if (!thumb) {
+    throw new Error(`Missing ${hand} hand thumb guide area`);
+  }
+
   return svgEl(
     'g',
     { class: 'hand', 'data-hand': hand },
@@ -705,6 +705,11 @@ function renderHandOverlay(
       class: activePalm ? 'hand__palm hand__palm--active' : 'hand__palm',
       d: palm.d,
       transform: palm.transform
+    }),
+    svgEl('path', {
+      class: activeThumbs ? 'hand__thumb hand__thumb--active' : 'hand__thumb',
+      d: thumb.d,
+      transform: thumb.transform
     }),
     ...fingers.map((area) => {
       const fingerNumber = area.fingerNumber;

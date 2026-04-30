@@ -11,11 +11,11 @@ Goal: create hand visuals that follow the reference image closely instead of man
 
 ## Current Asset Direction
 
-The runtime hand guide is a checked-in public SVG asset with overlay hit regions for active hand and `fingerNumber`. Local reference images are optional research material and are not required for running, testing, or building the project.
+The runtime hand guide is a checked-in public SVG asset with overlay hit regions for active hand, `fingerNumber`, and visual thumbs. Local reference images are optional research material and are not required for running, testing, or building the project.
 
 ## Next Step
 
-If the hand asset is replaced later, keep the same runtime contract: a public SVG asset plus overlay hit regions for active hand and `fingerNumber`. Do not make the app depend on local reference folders.
+If the hand asset is replaced later, keep the same runtime contract: a public SVG asset plus overlay hit regions for active hand, `fingerNumber`, and visual thumbs. Do not make the app depend on local reference folders.
 
 References:
 

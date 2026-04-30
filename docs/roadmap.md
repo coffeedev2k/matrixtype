@@ -3,7 +3,6 @@
 Next useful steps:
 
 - Add lesson presets that start from the starting finger positions and gradually expand to the whole keyboard.
-- Replace the current hand asset with a version where thumbs are separate visible fields. The thumb should remain unfilled when highlighting the active palm and numbered finger.
 - Add a public command-map editor for contributors, so new layouts can be reviewed without touching the trainer engine.
 
 Done:
@@ -25,8 +24,9 @@ Done:
 - Added Polish Programmer AltGr commands for `ąćęłńóśźż` and uppercase variants.
 - Added real compound character maps for Portuguese, Dutch, French, Czech, and Slovak using the existing dead-key engine.
 - Added app-level integration tests that generate a supported symbol corpus for every layout, set it as custom text, type it through the trainer input adapter, and verify completion.
-- Replaced the manually drawn trainer hands with `public/assets/hands-numbered-v3.svg` as the base visual.
+- Replaced the manually drawn trainer hands with `public/assets/hands.svg` as the base visual.
 - The trainer overlays active palm and active numbered finger highlights on top of that vector asset using only `hand + fingerNumber`.
+- Rebuilt the trainer hand overlay from separate palm, numbered finger, and visual thumb regions based on `public/assets/hands.svg`. Space highlights both visual thumbs without adding thumb to method numbering.
 - Custom training text keeps its original case so advanced input behavior can be tested. Default layout texts still use V1 lowercase normalization.
 - The trainer desaturates the hand asset dynamically and highlights the active hand and active finger in red using asset-derived paths.
 - Added Spanish interface copy plus Spanish QWERTY Latin America and Spanish QWERTY Spain layout packs. See `docs/spanish-language-addition.md`.

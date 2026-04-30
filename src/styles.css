@@ -485,13 +485,19 @@ h2 {
   pointer-events: none;
 }
 
+.hands-guide__background {
+  fill: #e7ebf6;
+}
+
 .hand__palm,
-.hand__finger {
+.hand__finger,
+.hand__thumb {
   opacity: 0;
   pointer-events: none;
 }
 
-.hand__palm {
+.hand__palm,
+.hand__thumb {
   fill: #ff1f1f;
 }
 
@@ -499,7 +505,8 @@ h2 {
   opacity: 0.5;
 }
 
-.hand__finger--active {
+.hand__finger--active,
+.hand__thumb--active {
   fill: #ff1f1f;
   opacity: 0.88;
   filter: drop-shadow(0 0 0.3rem rgba(255, 31, 31, 0.35));

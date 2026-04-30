@@ -25,10 +25,9 @@ describe('app UI', () => {
     expect(document.querySelector('.command-banner')?.textContent).toContain('Произнесите команду');
     expect(document.querySelector('.input-capture')).toBeTruthy();
     expect(document.querySelector('.stats-grid')?.textContent).toContain('Время');
-    expect(document.querySelector('.hands-guide')).toBeTruthy();
-    expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain(
-      'hands-numbered-v3.svg'
-    );
+    expect(document.querySelector('.hands-guide')?.getAttribute('viewBox')).toBe('0 0 2790 1707');
+    expect(document.querySelector('.hands-guide__background')).toBeTruthy();
+    expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain('hands.svg');
     expect(document.body.textContent).toContain('Как тренироваться');
     expect(document.body.textContent).toContain('Не смотрите на клавиатуру.');
   });
@@ -60,7 +59,41 @@ describe('app UI', () => {
 
     expect(document.querySelectorAll('.hand__palm--active')).toHaveLength(1);
     expect(document.querySelectorAll('.hand__finger--active')).toHaveLength(1);
+    expect(document.querySelectorAll('.hand__thumb')).toHaveLength(2);
+    expect(document.querySelectorAll('.hand__thumb--active')).toHaveLength(0);
     expect(document.querySelector('.hand__number--active')?.textContent).toBe('1');
+  });
+
+  it('highlights the visual finger slot that matches the spoken command number', async () => {
+    await bootApp('en-US');
+
+    clickButton('Custom text');
+    setCustomText('ts');
+    clickButton('Save');
+
+    expect(document.querySelector('.command-banner')?.textContent).toContain('left, 1st, up right');
+    expect(activeFingerVisualSlot('left')).toEqual({ fingerNumber: '1', slot: 3 });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 't' }));
+
+    expect(document.querySelector('.command-banner')?.textContent).toContain('left, 3rd, in place');
+    expect(activeFingerVisualSlot('left')).toEqual({ fingerNumber: '3', slot: 1 });
+  });
+
+  it('highlights both visual thumbs for space without activating palms or numbered fingers', async () => {
+    await bootApp('en-US');
+
+    clickButton('Custom text');
+    setCustomText('a a');
+    clickButton('Save');
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+
+    expect(document.querySelector('.command-banner__char')?.textContent).toBe('space');
+    expect(document.querySelectorAll('.hand__thumb--active')).toHaveLength(2);
+    expect(document.querySelectorAll('.hand__palm--active')).toHaveLength(0);
+    expect(document.querySelectorAll('.hand__finger--active')).toHaveLength(0);
+    expect(document.querySelectorAll('.hand__number--active')).toHaveLength(0);
   });
 
   it('renders hand finger numbers in the same order as the reference image', async () => {
@@ -303,4 +336,42 @@ function fingerNumbersForHand(hand: 'left' | 'right'): string[] {
   return Array.from(document.querySelectorAll(`[data-hand="${hand}"] [data-finger-number]`)).map(
     (item) => item.getAttribute('data-finger-number') ?? ''
   );
+}
+
+function activeFingerVisualSlot(hand: 'left' | 'right'): { fingerNumber: string; slot: number } | null {
+  const slots = Array.from(document.querySelectorAll<SVGGElement>(`[data-hand="${hand}"] .hand__digit`))
+    .map((digit) => {
+      const path = digit.querySelector<SVGPathElement>('.hand__finger');
+      const bounds = path ? pathBounds(path.getAttribute('d') ?? '') : null;
+
+      return {
+        digit,
+        centerX: bounds ? (bounds.minX + bounds.maxX) / 2 : Number.NaN
+      };
+    })
+    .sort((left, right) => left.centerX - right.centerX);
+  const activeSlot = slots.findIndex((slot) => slot.digit.classList.contains('hand__digit--active'));
+
+  if (activeSlot === -1) {
+    return null;
+  }
+
+  return {
+    fingerNumber: slots[activeSlot].digit.getAttribute('data-finger-number') ?? '',
+    slot: activeSlot
+  };
+}
+
+function pathBounds(d: string): { minX: number; maxX: number } {
+  const numbers = Array.from(d.matchAll(/-?\d+(?:\.\d+)?/g)).map((match) => Number(match[0]));
+  const xs: number[] = [];
+
+  for (let index = 0; index < numbers.length - 1; index += 2) {
+    xs.push(numbers[index]);
+  }
+
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs)
+  };
 }

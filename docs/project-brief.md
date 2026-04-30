@@ -41,7 +41,7 @@ Finger numbers follow the original method and should not be replaced with names 
 - Left hand visual order from left to right is `4, 3, 2, 1`.
 - Right hand visual order from left to right is `1, 2, 3, 4`.
 
-The SVG hands should show both hands as outlines, fill the active hand palm, and fill only the active numbered finger.
+The SVG hands should show both hands as outlines. The visual guide is split into palm, numbered fingers, and a separate visual thumb area. Normal key hints fill the active palm without the thumb and only the active numbered finger. Space hints fill both visual thumbs without adding the thumb as finger `0` to the method.
 
 ## Practice Statistics
 
