@@ -8,8 +8,15 @@ describe('app UI', () => {
     await bootApp('ru-RU');
 
     expect(document.body.textContent).toContain('Учимся слепой печати, как в Матрице');
+    expect(document.body.textContent).toContain('обязательный атрибут специалиста');
+    expect(document.body.textContent).toContain('двух с половиной часов');
     expect(document.body.textContent).toContain('Нумерация пальцев');
+    expect(document.body.textContent).toContain('каждой клавише соответствует свой палец');
+    expect(document.body.textContent).toContain('Большой палец не нумеруется');
     expect(document.body.textContent).toContain('На левой руке слева направо: 4, 3, 2, 1.');
+    expect(document.querySelector<HTMLAnchorElement>('.welcome-screen .support-link')?.href).toBe(
+      'https://ko-fi.com/coffeedev2k'
+    );
     expect(document.querySelector<HTMLImageElement>('.keyboard-reference img')?.src).toContain('keyboard.png');
     expect(document.querySelector('.share-links')?.textContent).toContain('Telegram');
     expect(document.body.textContent).not.toContain('MatrixType V1');
@@ -25,6 +32,8 @@ describe('app UI', () => {
     expect(document.querySelector('.command-banner')?.textContent).toContain('Произнесите команду');
     expect(document.querySelector('.input-capture')).toBeTruthy();
     expect(document.querySelector('.stats-grid')?.textContent).toContain('Время');
+    expect(document.querySelector('.stats-grid')?.textContent).toContain('2h 30m');
+    expect(isAfter('.stats-grid', '.hands-guide')).toBe(true);
     expect(document.querySelector('.hands-guide')?.getAttribute('viewBox')).toBe('0 0 2790 1707');
     expect(document.querySelector('.hands-guide__background')).toBeTruthy();
     expect(document.querySelector('.hands-guide__image')?.getAttribute('href')).toContain('hands.svg');
@@ -336,6 +345,16 @@ function fingerNumbersForHand(hand: 'left' | 'right'): string[] {
   return Array.from(document.querySelectorAll(`[data-hand="${hand}"] [data-finger-number]`)).map(
     (item) => item.getAttribute('data-finger-number') ?? ''
   );
+}
+
+function isAfter(laterSelector: string, earlierSelector: string): boolean {
+  const later = document.querySelector(laterSelector);
+  const earlier = document.querySelector(earlierSelector);
+
+  expect(later).toBeTruthy();
+  expect(earlier).toBeTruthy();
+
+  return Boolean(earlier!.compareDocumentPosition(later!) & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 function activeFingerVisualSlot(hand: 'left' | 'right'): { fingerNumber: string; slot: number } | null {

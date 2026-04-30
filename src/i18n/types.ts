@@ -1,5 +1,6 @@
 export interface AppCopy {
   welcomeTitle: string;
+  welcomeMotivation: string[];
   welcomeLead: string;
   architectureNote: string;
   methodStepsTitle: string;

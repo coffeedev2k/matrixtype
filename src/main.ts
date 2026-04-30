@@ -34,7 +34,7 @@ const handsGuideAsset = `${import.meta.env.BASE_URL}assets/hands.svg`;
 const keyboardAsset = `${import.meta.env.BASE_URL}assets/keyboard.png`;
 const supportUrl = 'https://ko-fi.com/coffeedev2k';
 const activeInputPauseMs = 5000;
-const skillTargetMs = 3 * 60 * 60 * 1000;
+const skillTargetMs = 150 * 60 * 1000;
 
 interface AppState {
   screen: Screen;
@@ -153,6 +153,11 @@ function renderWelcome(copy: AppCopy): HTMLElement {
         'div',
         { className: 'intro-copy' },
         el('h1', {}, copy.welcomeTitle),
+        el(
+          'div',
+          { className: 'welcome-motivation' },
+          ...copy.welcomeMotivation.map((item) => el('p', {}, item))
+        ),
         el('p', { className: 'lead' }, copy.welcomeLead),
         el('div', { className: 'notice-list' }, renderNotice(copy.architectureNote)),
         renderInfoList(copy.methodStepsTitle, copy.methodSteps),
@@ -162,6 +167,7 @@ function renderWelcome(copy: AppCopy): HTMLElement {
       el(
         'aside',
         { className: 'start-panel' },
+        renderSupportBlock(copy),
         localeSelect,
         layoutSelect,
         el(
@@ -231,10 +237,10 @@ function renderTrainer(copy: AppCopy): HTMLElement {
           el('span', {}, `${copy.errorCount}: ${state.trainer.errorCount}`)
         ),
         renderInputCapture(),
-        renderStats(state.preferences.stats),
         el('div', { className: 'target-text', ariaLabel: copy.textLabel }, ...renderTextSpans()),
         el('div', { className: 'typed-line', ariaLabel: copy.textLabel }, state.trainer.typedText || ' '),
         renderHands(command, cue?.char ?? null),
+        renderStats(state.preferences.stats),
         complete
           ? el(
               'div',

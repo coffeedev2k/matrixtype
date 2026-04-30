@@ -31,6 +31,7 @@ Examples:
 - English UI + Russian ЙЦУКЕН shows English commands for Russian keys.
 
 Commands are stored in layout packs under `src/data/layouts/`. UI text is stored under `src/i18n/`.
+All user-facing interface copy, including welcome-page promise, motivation text, and method explanation, must be synchronized across every supported locale. Non-English interfaces must not fall back to English marketing/welcome text; `tests/i18n.test.ts` guards this as part of the quality gate.
 
 ## Finger Numbering
 
@@ -47,7 +48,7 @@ The SVG hands should show both hands as outlines. The visual guide is split into
 
 The trainer stores browser-local progress only. It tracks active typing time, typed characters, typed words, and word speed. Active time pauses when more than 5 seconds pass without input, and resumes after the next correct typed character.
 
-The current skill target is 3 hours of active typing time. When the target is reached, the trainer changes the active-time card from yellow to blue and shows three fireworks.
+The current skill target is 2.5 hours of active typing time. When the target is reached, the trainer changes the active-time card from yellow to blue and shows three fireworks.
 
 ## Testing And Done
 

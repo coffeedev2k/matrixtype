@@ -17,6 +17,8 @@ Test placement:
 - Put test logic in `tests/`.
 - Keep `.pre-commit-config.yaml` as an orchestrator only.
 - Use pre-commit hooks for formatting hygiene, config validation, and calling the project test suite.
+- Keep user-facing interface copy synchronized across every supported locale in `src/i18n/`.
+- When adding or changing welcome-page promise, motivation, or method-explanation copy, update every locale and keep `tests/i18n.test.ts` as the quality gate against English fallback text leaking into non-English interfaces.
 
 The app has exactly three screens:
 

@@ -2,6 +2,11 @@ import type { AppCopy } from './types';
 
 export const esCopy: AppCopy = {
   welcomeTitle: 'Mecanografía a ciegas con comandos corporales',
+  welcomeMotivation: [
+    'Para quienes trabajan con ordenador, escribir sin mirar es una habilidad profesional básica. Muchas personas todavía no la tienen porque no existía una forma rápida de aprenderla sin memorizar durante decenas de horas.',
+    'MatrixType es un entrenador único que te permite empezar a escribir todos los símbolos sin mirar desde el primer día mediante comandos corporales cortos.',
+    'Dos horas y media de práctica consciente bastan para crear una habilidad que trabajará para ti durante años.'
+  ],
   welcomeLead:
     'El entrenador muestra el siguiente símbolo y un comando corto para decir en voz alta. Dices el comando, pulsas la tecla con el dedo indicado y avanzas solo después de una entrada correcta.',
   architectureNote:
@@ -11,7 +16,12 @@ export const esCopy: AppCopy = {
     'Elige el idioma de la interfaz y el teclado que quieres entrenar.',
     'Mira el comando en la pantalla, no el teclado.',
     'Di el comando en voz alta y nota el movimiento de la mano.',
-    'Pulsa la tecla solo después de decir el comando.'
+    'Pulsa la tecla solo después de decir el comando.',
+    'El principio de la mecanografía a ciegas es sencillo: cada tecla pertenece a un dedo. Cada dedo pulsa su propio grupo de teclas.',
+    'El esquema de colores de abajo muestra qué dedo pulsa cada grupo de teclas. MatrixType ya lo tiene en cuenta, así que no necesitas memorizarlo.',
+    'El entrenador muestra un comando corto, por ejemplo: «izquierda, 1.º, en su sitio». «Izquierda» significa mano izquierda, «1.º» significa primer dedo y «en su sitio» significa la tecla de la posición inicial de ese dedo.',
+    'Los dedos se cuentan desde el índice hasta el meñique: índice — 1, medio — 2, anular — 3, meñique — 4. El pulgar no se numera y se usa para el espacio.',
+    'Si el comando es «derecha, 1.º, arriba», pulsa con el índice de la mano derecha la tecla de la fila superior, no la tecla de la posición inicial.'
   ],
   fingerRulesTitle: 'Numeración de los dedos',
   fingerRules: [
